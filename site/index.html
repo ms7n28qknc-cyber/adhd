@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore GP practice-level ADHD prescribing data across Northern Ireland, 2023–2025.">
+  <title>ADHD Prescribing in Northern Ireland</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#" class="site-brand">
+        <span class="brand-pill">NI</span>
+        ADHD Prescribing
+      </a>
+      <nav class="site-nav" aria-label="Site navigation">
+        <a href="https://themoment.blog" target="_blank" rel="noopener" class="nav-link">themoment.blog</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ================================================================
+       VIEW: LANDING
+       ================================================================ -->
+  <main>
+    <div id="view-landing" class="view">
+
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-eyebrow">Data Explorer</div>
+            <h1 id="hero-title" class="hero-title">
+              ADHD Prescribing<br>in Northern Ireland
+            </h1>
+            <p class="hero-subtitle">GP Practice-level prescribing data, 2023–2025</p>
+
+            <div class="search-container" role="search">
+              <div class="search-box">
+                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input
+                  id="search-input"
+                  type="search"
+                  placeholder="Search by practice name, postcode or area…"
+                  autocomplete="off"
+                  spellcheck="false"
+                  aria-label="Search GP practices"
+                  aria-autocomplete="list"
+                  aria-controls="search-results"
+                  aria-expanded="false"
+                >
+                <button class="search-clear hidden" id="search-clear" aria-label="Clear search" tabindex="-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+              <ul id="search-results" class="search-results hidden" role="listbox" aria-label="Practice suggestions"></ul>
+            </div>
+
+            <p class="search-hint" id="search-hint">
+              <span id="practice-count">—</span> GP practices across Northern Ireland
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="intro-section" aria-labelledby="about-title">
+        <div class="container intro-grid">
+          <div class="intro-body">
+            <h2 id="about-title">About this data</h2>
+            <p>This tool lets you explore how ADHD medication is prescribed at individual GP practice level across Northern Ireland. Use the search above to find any practice and see month-by-month prescribing trends broken down by drug.</p>
+            <p>The data covers prescriptions issued between January 2023 and December 2025 and tracks five medications: Methylphenidate, Lisdexamfetamine, Atomoxetine, Dexamfetamine, and Guanfacine. Each record shows the number of items prescribed, quantities dispensed, and associated costs.</p>
+            <p>Practice data is sourced from the Business Services Organisation's open data portal and is updated quarterly.</p>
+          </div>
+          <aside class="intro-stats" aria-label="Summary statistics">
+            <div class="kpi-card">
+              <div class="kpi-value" id="kpi-practices">—</div>
+              <div class="kpi-label">GP Practices</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value">5</div>
+              <div class="kpi-label">ADHD Medications tracked</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-value">36</div>
+              <div class="kpi-label">Months of data</div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+    </div><!-- /view-landing -->
+
+
+    <!-- ================================================================
+         VIEW: PRACTICE DETAIL
+         ================================================================ -->
+    <div id="view-practice" class="view hidden">
+
+      <div class="container">
+
+        <div class="practice-nav">
+          <button id="back-btn" class="back-btn" aria-label="Back to search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            Back to search
+          </button>
+        </div>
+
+        <header class="practice-hero" aria-labelledby="practice-name">
+          <div class="practice-hero-inner">
+            <div>
+              <div class="practice-lcg-tag" id="practice-lcg-tag"></div>
+              <h1 id="practice-name" class="practice-name"></h1>
+              <p class="practice-meta">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span id="practice-address"></span>
+                <span class="meta-sep">·</span>
+                <strong id="practice-postcode"></strong>
+              </p>
+            </div>
+            <div class="practice-id" aria-label="Practice number">
+              #<span id="practice-id"></span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Summary stats -->
+        <div class="stats-grid" id="stats-grid" role="region" aria-label="Summary statistics">
+          <div class="stat-card">
+            <div class="stat-label">Total items prescribed</div>
+            <div class="stat-value" id="stat-total">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Monthly average</div>
+            <div class="stat-value" id="stat-avg">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Most prescribed drug</div>
+            <div class="stat-value stat-value--sm" id="stat-top-drug">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Prescribing trend</div>
+            <div class="stat-value" id="stat-trend">—</div>
+          </div>
+        </div>
+
+        <!-- No-data state -->
+        <div id="no-data-notice" class="no-data-notice hidden" role="status">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+          <p>No ADHD prescribing data available for this practice in the selected period.</p>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid" id="charts-grid">
+          <div class="chart-card">
+            <div class="chart-card-hd">
+              <h2 class="chart-title">Monthly prescriptions</h2>
+              <p class="chart-desc">Total ADHD items prescribed per month</p>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="chart-total" aria-label="Monthly total prescriptions chart" role="img"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card-hd">
+              <h2 class="chart-title">Breakdown by drug</h2>
+              <p class="chart-desc">Items per medication per month (stacked)</p>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="chart-drugs" aria-label="Drug breakdown chart" role="img"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drug table -->
+        <div class="table-card" id="drug-table-card">
+          <div class="table-card-hd">
+            <h2 class="section-title">Drug breakdown</h2>
+            <p class="table-desc">Totals across the full period</p>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table" id="drug-table">
+              <thead>
+                <tr>
+                  <th scope="col">Medication</th>
+                  <th scope="col" class="col-num">Total items</th>
+                  <th scope="col" class="col-num">Avg / month</th>
+                  <th scope="col" class="col-num">Share</th>
+                  <th scope="col" class="col-num">Total cost (est.)</th>
+                </tr>
+              </thead>
+              <tbody id="drug-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /view-practice -->
+
+  </main>
+
+  <!-- Loading overlay -->
+  <div id="loading" class="loading hidden" role="status" aria-label="Loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Error banner -->
+  <div id="error-banner" class="error-banner hidden" role="alert">
+    <div class="container">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+      <p id="error-text"></p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-primary">
+        <p class="footer-source">
+          Data: <strong>GP Prescribing Data and GP Practice List Sizes</strong> from
+          <a href="https://www.opendatani.gov.uk" target="_blank" rel="noopener">OpenDataNI</a>
+          (Business Services Organisation)
+        </p>
+        <p class="footer-licence">
+          Licensed under the
+          <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">UK Open Government Licence (OGL) v3.0</a>
+        </p>
+      </div>
+      <div class="footer-secondary">
+        <p>Analysis by <a href="https://themoment.blog" target="_blank" rel="noopener">themoment.blog</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
