@@ -82,8 +82,9 @@
         // Build the address/postcode/LCG line, skipping blanks
         const meta = [address, postcode, lcg].filter(Boolean).join(' · ');
 
-        return `<a href="index.html#practice/${p.id}" class="practice-entry">
-          <div class="pe-surgery">${surgery}</div>
+        const closedTag = p.closed ? '<span class="pe-closed">(Closed)</span>' : '';
+        return `<a href="index.html#practice/${p.id}" class="practice-entry${p.closed ? ' practice-entry--closed' : ''}">
+          <div class="pe-surgery">${surgery}${closedTag}</div>
           ${doctor ? `<div class="pe-doctor">${doctor}</div>` : ''}
           ${meta   ? `<div class="pe-meta">${meta}</div>`     : ''}
         </a>`;

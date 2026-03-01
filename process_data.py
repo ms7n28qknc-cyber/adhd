@@ -57,6 +57,56 @@ def round2(value):
 
 
 # ---------------------------------------------------------------------------
+# Closure detection
+# ---------------------------------------------------------------------------
+
+def detect_closure(registered_patients, month_cols, end_month="2025-12", min_consecutive=6):
+    """
+    Determine whether a practice has closed.
+
+    A practice is considered closed if its registered patient count is 0 (or
+    missing) for at least `min_consecutive` consecutive months running all the
+    way through to `end_month`.
+
+    Returns:
+        (closed: bool, closedDate: str|None)
+        closedDate is the last month where patient count was > 0, formatted
+        as "YYYY-MM".  None if the practice appears to have always been empty
+        (data anomaly) or was not closed.
+    """
+    relevant = sorted(m for m in month_cols if m <= end_month)
+
+    if not relevant or relevant[-1] != end_month:
+        # Data doesn't reach end_month — can't assess closure reliably.
+        return False, None
+
+    if len(relevant) < min_consecutive:
+        return False, None
+
+    # Count consecutive zero/null months walking backwards from end_month.
+    consecutive_zeros = 0
+    last_with_patients = None
+
+    for m in reversed(relevant):
+        val = registered_patients.get(m)
+        if val is None or val == 0:
+            consecutive_zeros += 1
+        else:
+            last_with_patients = m
+            break
+
+    if consecutive_zeros < min_consecutive:
+        return False, None
+
+    # Require at least one month with patients — otherwise it's a data gap,
+    # not a closure (e.g. a practice that never appeared in patient counts).
+    if last_with_patients is None:
+        return False, None
+
+    return True, last_with_patients
+
+
+# ---------------------------------------------------------------------------
 # Step 1 – Read GP registered-patients file
 # ---------------------------------------------------------------------------
 
@@ -291,6 +341,8 @@ def write_practices_index(practices, out_dir):
             "address": info["address"],
             "postcode": info["postcode"],
             "lcg": info["lcg"],
+            "closed": info.get("closed", False),
+            "closedDate": info.get("closedDate"),
         }
         for prac_no, info in sorted(practices.items())
     ]
@@ -311,6 +363,8 @@ def write_practice_files(practices, rx_by_practice, out_dir):
             "address": info["address"],
             "postcode": info["postcode"],
             "lcg": info["lcg"],
+            "closed": info.get("closed", False),
+            "closedDate": info.get("closedDate"),
             "registered_patients": info["registered_patients"],
             "prescribing": prescribing,
         }
@@ -318,7 +372,7 @@ def write_practice_files(practices, rx_by_practice, out_dir):
     return practices_dir
 
 
-def write_overall_stats(overall, overall_practices_by_month, out_dir):
+def write_overall_stats(overall, overall_practices_by_month, out_dir, closed_practices_count=0):
     months_out = {}
     for month in sorted(overall.keys()):
         drugs = overall[month]
@@ -349,7 +403,10 @@ def write_overall_stats(overall, overall_practices_by_month, out_dir):
         }
 
     path = os.path.join(out_dir, "overall-stats.json")
-    write_json(path, {"months": months_out})
+    write_json(path, {
+        "closed_practices_count": closed_practices_count,
+        "months": months_out,
+    })
     return path
 
 
@@ -380,6 +437,16 @@ def main(data_dir="/data", out_dir="/site/data"):
         f"date range {min_m} – {max_m}"
     )
 
+    print("Detecting closed practices …")
+    closed_count = 0
+    for prac_no, info in practices.items():
+        closed, closed_date = detect_closure(info["registered_patients"], month_cols)
+        info["closed"] = closed
+        info["closedDate"] = closed_date
+        if closed:
+            closed_count += 1
+    print(f"  {closed_count} practices identified as closed")
+
     print("Writing practices-index.json …")
     idx_path = write_practices_index(practices, out_dir)
 
@@ -389,7 +456,7 @@ def main(data_dir="/data", out_dir="/site/data"):
     print(f"  {len(prac_files)} files written")
 
     print("Writing overall-stats.json …")
-    stats_path = write_overall_stats(overall, overall_practices_by_month, out_dir)
+    stats_path = write_overall_stats(overall, overall_practices_by_month, out_dir, closed_count)
 
     # ------------------------------------------------------------------
     # Summary
@@ -414,6 +481,7 @@ def main(data_dir="/data", out_dir="/site/data"):
     print("SUMMARY")
     print("=" * 60)
     print(f"  Practices processed    : {len(prac_files)}")
+    print(f"  Closed practices       : {closed_count}")
     print(f"  Prescribing rows       : {row_count:,}")
     print(f"  Date range             : {min_m} – {max_m}")
     print(f"  practices-index.json   : {file_size(idx_path)}")

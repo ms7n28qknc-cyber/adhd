@@ -220,7 +220,28 @@
      Practice rendering
      ========================================================================= */
 
+  /** "2020-03" → "March 2020" */
+  function formatClosedDate(ym) {
+    if (!ym) return '';
+    const [y, m] = ym.split('-');
+    return new Date(+y, +m - 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  }
+
   function renderPractice(data) {
+    // ---- Closed-practice banner ----
+    const banner = $('closed-banner');
+    if (data.closed) {
+      const dateStr = data.closedDate
+        ? formatClosedDate(data.closedDate)
+        : 'some point during this period';
+      $('closed-banner-text').textContent =
+        `This practice appears to have closed around ${dateStr}. ` +
+        `Data shown covers the period when it was active.`;
+      show(banner);
+    } else {
+      hide(banner);
+    }
+
     // ---- Header ----
     $('practice-lcg-tag').textContent    = data.lcg                            || '';
     $('practice-name').textContent       = titleCase(data.surgeryName          || '');
@@ -636,6 +657,7 @@
         const doctor  = titleCase(p.doctorName  || '');
 
         // Show surgery name prominently; doctor name in brackets underneath
+        const closedTag = p.closed ? '<span class="sr-closed">(Closed)</span>' : '';
         li.innerHTML = `
           <svg class="sr-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -644,7 +666,7 @@
             <circle cx="12" cy="10" r="3"/>
           </svg>
           <div>
-            <div class="sr-name">${hl(surgery, q)} <span class="sr-doctor">(${hl(doctor, q)})</span></div>
+            <div class="sr-name">${hl(surgery, q)}${closedTag} <span class="sr-doctor">(${hl(doctor, q)})</span></div>
             <div class="sr-sub">${hl(p.postcode, q)} &middot; ${hl(p.lcg, q)}</div>
           </div>
         `;

@@ -101,6 +101,16 @@ async function main() {
     </div>
   `).join('');
 
+  const closedCount = data.closed_practices_count || 0;
+  if (closedCount > 0) {
+    const noteEl = document.getElementById('closed-note');
+    noteEl.textContent =
+      `Note: ${closedCount} practices in this dataset appear to have closed at some point ` +
+      `during the 2015–2025 period. Their historical prescribing data is still viewable ` +
+      `on individual practice pages.`;
+    noteEl.classList.remove('hidden');
+  }
+
   /* ── 2. Monthly cost + items chart ────────────────────────────────────── */
 
   const chartLabels = monthKeys.map(k => {
