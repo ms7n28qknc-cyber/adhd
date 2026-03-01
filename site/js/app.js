@@ -16,11 +16,10 @@
      ========================================================================= */
 
   /**
-   * Canonical data period. Update these when process_data.py covers a wider
-   * range (e.g. 2015-01 to 2025-12). Charts always show the full period so
-   * that months with zero prescribing are explicit rather than absent.
+   * Canonical data period. Charts always show the full period so that months
+   * with zero prescribing are explicit rather than absent.
    */
-  const DATA_START = '2023-01';
+  const DATA_START = '2015-01';
   const DATA_END   = '2025-12';
 
   const DRUG_NAMES = [

@@ -2,17 +2,21 @@
 process_data.py - GP/ADHD prescribing data processor (standard library only)
 
 Reads:
-  /data/gp-registered-patients-by-practice-2023-01_to_2025-12-closedpractices0-v2.csv
-  /data/gp-prescribing-2023-2025-ADHD-only-combined-fixed.csv
+  /data/gp-registered-patients-by-practice-2015-01_to_2025-12.csv  (GP patients)
+  /data/gp-prescribing-2023-2025-ADHD-only-combined-fixed.csv      (prescribing)
+
+  GP_FILENAME must match the exact filename in your /data folder.
+  Run with --list-data to print all CSV files found there.
 
 Outputs to /site/data/:
-  practices-index.json          - all 318 practices for search/autocomplete
+  practices-index.json          - all practices for search/autocomplete
   practices/{id}.json           - per-practice detail
   overall-stats.json            - NI-wide monthly aggregates
 
-Optional CLI overrides (for testing):
+Optional CLI overrides:
   --data-dir <path>   default: /data
   --out-dir  <path>   default: /site/data
+  --list-data         print CSV files in data-dir and exit
 """
 
 import csv
@@ -21,9 +25,7 @@ import os
 import sys
 from collections import defaultdict
 
-GP_FILENAME = (
-    "gp-registered-patients-by-practice-2023-01_to_2025-12-closedpractices0-v2.csv"
-)
+GP_FILENAME = "gp-registered-patients-by-practice-2015-01_to_2025-12.csv"
 RX_FILENAME = "gp-prescribing-2023-2025-ADHD-only-combined-fixed.csv"
 
 
@@ -415,10 +417,10 @@ def main(data_dir="/data", out_dir="/site/data"):
 
 
 if __name__ == "__main__":
-    # Simple CLI: --data-dir and --out-dir optional overrides
     args = sys.argv[1:]
     data_dir = "/data"
     out_dir = "/site/data"
+    list_data = False
     i = 0
     while i < len(args):
         if args[i] == "--data-dir" and i + 1 < len(args):
@@ -427,6 +429,20 @@ if __name__ == "__main__":
         elif args[i] == "--out-dir" and i + 1 < len(args):
             out_dir = args[i + 1]
             i += 2
+        elif args[i] == "--list-data":
+            list_data = True
+            i += 1
         else:
             i += 1
+
+    if list_data:
+        try:
+            csvs = sorted(f for f in os.listdir(data_dir) if f.endswith(".csv"))
+            print(f"CSV files in {data_dir}:")
+            for f in csvs:
+                print(f"  {f}")
+        except OSError as e:
+            print(f"Cannot read {data_dir}: {e}", file=sys.stderr)
+        sys.exit(0)
+
     main(data_dir=data_dir, out_dir=out_dir)

@@ -1,0 +1,75 @@
+# ============================================================
+# ADHD Prescribing NI — Apache configuration
+# GoDaddy shared hosting (cPanel / Apache 2.4)
+# ============================================================
+
+Options -Indexes
+Options +FollowSymLinks
+
+# ------------------------------------------------------------
+# MIME types
+# ------------------------------------------------------------
+<IfModule mod_mime.c>
+  AddType application/json         .json
+  AddType text/css                 .css
+  AddType application/javascript   .js
+  AddType text/html                .html
+</IfModule>
+
+# ------------------------------------------------------------
+# Gzip compression
+# ------------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/json
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE application/xml
+</IfModule>
+
+# ------------------------------------------------------------
+# Cache headers
+# ------------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # HTML — no cache (always serve fresh)
+  ExpiresByType text/html                "access plus 0 seconds"
+
+  # JSON data — 1 day
+  ExpiresByType application/json         "access plus 1 day"
+
+  # CSS / JS — 1 week
+  ExpiresByType text/css                 "access plus 1 week"
+  ExpiresByType application/javascript   "access plus 1 week"
+</IfModule>
+
+# mod_headers fallback (also handles Vary for gzip-aware proxies)
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
+
+  <FilesMatch "\.json$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+
+  # Tell proxies that the response varies with Accept-Encoding
+  Header append Vary Accept-Encoding
+</IfModule>
+
+# ------------------------------------------------------------
+# Security — block access to dotfiles
+# ------------------------------------------------------------
+<FilesMatch "^\.">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
