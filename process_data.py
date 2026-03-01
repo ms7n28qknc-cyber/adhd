@@ -64,9 +64,14 @@ def read_gp_file(path):
     """
     Returns:
         practices  : dict keyed by int PracNo ->
-                     {name, address, postcode, lcg,
+                     {doctorName, surgeryName, address, postcode, lcg,
                       registered_patients: {month_str: int|None}}
         month_cols : sorted list of month strings found in the header
+
+    CSV columns:
+        PracticeName  = lead doctor name  (e.g. "Dr. HOEY & PARTNERS")
+        Address1      = surgery/practice name (e.g. "HARLAND MEDICAL PRACTICE")
+        Address2+3    = street address
     """
     practices = {}
     month_cols = []
@@ -90,8 +95,8 @@ def read_gp_file(path):
             if prac_no == 0:
                 continue
 
+            # Address1 is the surgery name; Address2+3 are the street address
             address = build_address(
-                row.get("Address1", ""),
                 row.get("Address2", ""),
                 row.get("Address3", ""),
             )
@@ -102,7 +107,8 @@ def read_gp_file(path):
                 registered[m] = safe_int(val) if val else None
 
             practices[prac_no] = {
-                "name": row.get("PracticeName", "").strip(),
+                "doctorName": row.get("PracticeName", "").strip(),
+                "surgeryName": row.get("Address1", "").strip(),
                 "address": address,
                 "postcode": row.get("Postcode", "").strip(),
                 "lcg": row.get("LCG", "").strip(),
@@ -280,7 +286,8 @@ def write_practices_index(practices, out_dir):
     index = [
         {
             "id": prac_no,
-            "name": info["name"],
+            "doctorName": info["doctorName"],
+            "surgeryName": info["surgeryName"],
             "address": info["address"],
             "postcode": info["postcode"],
             "lcg": info["lcg"],
@@ -299,7 +306,8 @@ def write_practice_files(practices, rx_by_practice, out_dir):
         prescribing = build_prescribing_for_practice(prac_rx)
         doc = {
             "id": prac_no,
-            "name": info["name"],
+            "doctorName": info["doctorName"],
+            "surgeryName": info["surgeryName"],
             "address": info["address"],
             "postcode": info["postcode"],
             "lcg": info["lcg"],

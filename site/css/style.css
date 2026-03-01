@@ -310,6 +310,11 @@ button { font-family: var(--font); }
   font-weight: 700;
 }
 
+.sr-doctor {
+  font-weight: 400;
+  color: var(--text-2);
+}
+
 .sr-sub {
   font-size: 0.8rem;
   color: var(--text-2);
@@ -480,6 +485,13 @@ button { font-family: var(--font); }
   letter-spacing: -0.015em;
   margin-bottom: 0.625rem;
   text-transform: capitalize;
+}
+
+.practice-doctor {
+  font-size: 0.9375rem;
+  color: rgba(255,255,255,0.55);
+  font-weight: 400;
+  margin-bottom: 0.625rem;
 }
 
 .practice-meta {
@@ -936,4 +948,194 @@ button { font-family: var(--font); }
 
   body { background: #fff; color: #000; }
   .chart-card, .stat-card, .table-card { break-inside: avoid; }
+}
+
+/* =============================================================================
+   Browse / All Practices page  (practices.html)
+   ============================================================================= */
+
+/* Active nav link */
+.nav-link--active {
+  color: rgba(255,255,255,0.9) !important;
+}
+
+/* ── Banner ─────────────────────────────────────────────────────────────── */
+.browse-banner {
+  background: var(--navy);
+  border-bottom: 1px solid var(--navy-rule);
+  padding: 2.5rem 0 2rem;
+}
+
+.browse-banner-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.browse-title {
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.375rem;
+}
+
+.browse-subtitle {
+  font-size: 0.9375rem;
+  color: rgba(255,255,255,0.5);
+}
+
+.browse-search-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(255,255,255,0.55);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+  padding-bottom: 0.125rem; /* align baseline with subtitle */
+}
+.browse-search-link:hover { color: rgba(255,255,255,0.9); text-decoration: none; }
+
+/* ── Sticky alphabet nav ────────────────────────────────────────────────── */
+.alpha-nav-wrap {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 54px; /* header height */
+  z-index: 100;
+  box-shadow: var(--sh-sm);
+}
+
+.alpha-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 0.4375rem 0;
+}
+
+.alpha-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  transition: background 0.1s, color 0.1s;
+  line-height: 1;
+}
+.alpha-btn:hover {
+  background: var(--accent-bg);
+  color: var(--accent-dark);
+  text-decoration: none;
+}
+
+.alpha-btn--empty {
+  color: var(--border-mid);
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ── Practice directory list ────────────────────────────────────────────── */
+.browse-container {
+  padding-top: 2.5rem;
+  padding-bottom: 5rem;
+}
+
+.alpha-section {
+  margin-bottom: 3rem;
+  scroll-margin-top: 110px; /* header (54) + alpha nav (~46) + buffer */
+}
+
+.alpha-heading {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent);
+  display: inline-block;
+  min-width: 2rem;
+  margin-bottom: 1.125rem;
+}
+
+.practice-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0.625rem;
+}
+
+@media (max-width: 640px) {
+  .practice-list { grid-template-columns: 1fr; }
+}
+
+.practice-entry {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 0.875rem 1rem;
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  box-shadow: var(--sh-sm);
+}
+.practice-entry:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.07), var(--sh);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.pe-surgery {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.35;
+  margin-bottom: 0.2rem;
+}
+
+.pe-doctor {
+  font-size: 0.8125rem;
+  color: var(--text-2);
+  margin-bottom: 0.4rem;
+}
+
+.pe-meta {
+  font-size: 0.775rem;
+  color: var(--text-3);
+  line-height: 1.4;
+}
+
+/* Error state */
+.browse-error {
+  color: var(--red);
+  padding: 2rem 0;
+  font-size: 0.9375rem;
+}
+
+/* ── Search hint link on index.html ────────────────────────────────────── */
+.browse-hint {
+  margin-top: 0.625rem;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.38);
+}
+
+.browse-hint a {
+  color: rgba(255,255,255,0.55);
+  text-decoration: underline;
+  text-decoration-color: rgba(255,255,255,0.25);
+  text-underline-offset: 2px;
+}
+.browse-hint a:hover {
+  color: rgba(255,255,255,0.85);
+  text-decoration-color: rgba(255,255,255,0.5);
 }
