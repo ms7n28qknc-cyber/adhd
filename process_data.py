@@ -25,8 +25,8 @@ import os
 import sys
 from collections import defaultdict
 
-GP_FILENAME = "gp-registered-patients-by-practice-2015-01_to_2025-12.csv"
-RX_FILENAME = "gp-prescribing-2023-2025-ADHD-only-combined-fixed.csv"
+GP_FILENAME = "gp-registered-patients-by-practice-2015-01_to_2025-12_v2.csv"
+RX_FILENAME = "FinalList.csv"
 
 
 # ---------------------------------------------------------------------------
@@ -155,7 +155,8 @@ def read_rx_file(path):
             row_count += 1
 
             # Practice – stored as float string e.g. "1234.0"
-            prac_raw = row.get("Practice", "").strip()
+            # Column may be "Practice" or "PRACTICE" depending on source file
+            prac_raw = (row.get("Practice") or row.get("PRACTICE") or "").strip()
             if not prac_raw:
                 continue
             prac_no = safe_int(prac_raw)
