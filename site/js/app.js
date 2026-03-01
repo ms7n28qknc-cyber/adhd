@@ -208,7 +208,7 @@
       hide($('practice-skeleton'));
       reveal($('practice-content'), 'is-revealing');
 
-      document.title = `${titleCase(data.name)} — ADHD Prescribing NI`;
+      document.title = `${titleCase(data.surgeryName || data.doctorName || '')} — ADHD Prescribing NI`;
     } catch (err) {
       console.error(err);
       hide($('practice-skeleton'));
@@ -222,11 +222,12 @@
 
   function renderPractice(data) {
     // ---- Header ----
-    $('practice-lcg-tag').textContent  = data.lcg      || '';
-    $('practice-name').textContent     = titleCase(data.name);
-    $('practice-address').textContent  = data.address  || '';
-    $('practice-postcode').textContent = data.postcode || '';
-    $('practice-id').textContent       = data.id;
+    $('practice-lcg-tag').textContent    = data.lcg                            || '';
+    $('practice-name').textContent       = titleCase(data.surgeryName          || '');
+    $('practice-doctor').textContent     = titleCase(data.doctorName           || '');
+    $('practice-address').textContent    = data.address                        || '';
+    $('practice-postcode').textContent   = data.postcode                       || '';
+    $('practice-id').textContent         = data.id;
 
     // ---- Determine month range ----
     // Always plot the full canonical period so every month is represented
@@ -597,11 +598,13 @@
       if (!q) { this.close(); return; }
       if (!state.index) return;
 
+      const qs = q.replace(/\s/g, '');
       const hits = state.index
         .filter(p =>
-          p.name.toLowerCase().includes(q) ||
+          (p.surgeryName || '').toLowerCase().includes(q) ||
+          (p.doctorName  || '').toLowerCase().includes(q) ||
           // Postcode: strip spaces so "BT37" matches "BT37 9RH"
-          p.postcode.toLowerCase().replace(/\s/g, '').includes(q.replace(/\s/g, '')) ||
+          p.postcode.toLowerCase().replace(/\s/g, '').includes(qs) ||
           p.lcg.toLowerCase().includes(q) ||
           (p.address && p.address.toLowerCase().includes(q))
         )
@@ -629,7 +632,10 @@
         li.setAttribute('role', 'option');
         li.dataset.id = p.id;
 
-        // Highlight matches in name, postcode, AND LCG
+        const surgery = titleCase(p.surgeryName || '');
+        const doctor  = titleCase(p.doctorName  || '');
+
+        // Show surgery name prominently; doctor name in brackets underneath
         li.innerHTML = `
           <svg class="sr-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -638,7 +644,7 @@
             <circle cx="12" cy="10" r="3"/>
           </svg>
           <div>
-            <div class="sr-name">${hl(p.name, q)}</div>
+            <div class="sr-name">${hl(surgery, q)} <span class="sr-doctor">(${hl(doctor, q)})</span></div>
             <div class="sr-sub">${hl(p.postcode, q)} &middot; ${hl(p.lcg, q)}</div>
           </div>
         `;
@@ -722,12 +728,11 @@
 
   /**
    * Convert ALL-CAPS practice names to Title Case.
-   * Handles possessives correctly: "BRENDAN'S" → "Brendan's" (not "Brendan'S").
-   * Irish O' surnames work too: "O'BRIEN" → "O'Brien".
+   * Handles possessives: "BRENDAN'S" → "Brendan's".
+   * Works even when the input has a mixed-case prefix like "Dr. HOEY & PARTNERS".
    */
   function titleCase(str) {
     if (!str) return str;
-    if (str !== str.toUpperCase()) return str;  // already mixed case
     return str
       .toLowerCase()
       .replace(/\b\w/g, c => c.toUpperCase())   // capitalise each word start
