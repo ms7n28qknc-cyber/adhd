@@ -1307,3 +1307,32 @@ button { font-family: var(--font); }
   color: var(--text-3);
   margin-top: -0.25rem;
 }
+
+/* =============================================================================
+   Prescribing in context card
+   ============================================================================= */
+
+/* Chart area in context card is shorter than the main charts */
+.context-chart-wrap {
+  height: 200px;
+  margin-bottom: 1.25rem;
+}
+
+/* Caveat text below context table */
+.context-caveat {
+  font-size: 0.8rem;
+  color: var(--text-3);
+  font-style: italic;
+  line-height: 1.5;
+  margin-top: 1rem;
+}
+
+/* Subtle warm tint: practice rate above LCG average */
+td.rate-above {
+  background: rgba(217, 119, 6, 0.08);   /* amber-700, very faint */
+}
+
+/* Subtle cool tint: practice rate below LCG average */
+td.rate-below {
+  background: rgba(37, 99, 235, 0.07);   /* accent blue, very faint */
+}

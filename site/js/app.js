@@ -46,9 +46,11 @@
   const state = {
     index:    null,   // practices-index.json array
     practice: null,   // current loaded practice JSON
+    averages: null,   // averages.json (NI + LCG per-capita rates)
     charts: {
-      total: null,
-      drugs: null,
+      total:   null,
+      drugs:   null,
+      context: null,
     },
   };
 
@@ -203,6 +205,7 @@
       const data = await res.json();
       state.practice = data;
       renderPractice(data);
+      renderContext(data);
 
       // Swap skeleton → content
       hide($('practice-skeleton'));
@@ -568,6 +571,174 @@
   }
 
   /* =========================================================================
+     Context: per-capita comparison chart + table
+     ========================================================================= */
+
+  const YEARS = ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'];
+
+  function renderContext(data) {
+    const card = $('context-card');
+
+    // Need averages loaded and a known LCG to draw anything useful
+    if (!state.averages || !data.lcg) {
+      hide(card);
+      return;
+    }
+
+    const practiceRates = data.yearlyRatePerCapita || {};
+    const lcgRates      = state.averages.lcg[data.lcg] || {};
+    const niRates       = state.averages.ni             || {};
+    const lcgName       = data.lcg;
+
+    // Check if there is any practice rate at all
+    const hasAnyRate = YEARS.some(y => practiceRates[y] != null);
+
+    // Update LCG column header
+    $('context-lcg-header').textContent = `${lcgName} average`;
+
+    // ---- Chart ----
+    if (state.charts.context) {
+      state.charts.context.destroy();
+      state.charts.context = null;
+    }
+
+    const ctx = $('chart-context').getContext('2d');
+
+    state.charts.context = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: YEARS,
+        datasets: [
+          {
+            label:            'This practice',
+            data:             YEARS.map(y => practiceRates[y] ?? null),
+            borderColor:      '#2563eb',
+            backgroundColor:  'transparent',
+            borderWidth:      2.5,
+            pointRadius:      4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#2563eb',
+            pointBorderColor:     '#fff',
+            pointBorderWidth:     1.5,
+            tension:          0.3,
+            spanGaps:         false,
+          },
+          {
+            label:            `${lcgName} average`,
+            data:             YEARS.map(y => lcgRates[y] ?? null),
+            borderColor:      '#94a3b8',
+            backgroundColor:  'transparent',
+            borderWidth:      1.5,
+            borderDash:       [5, 4],
+            pointRadius:      2,
+            pointHoverRadius: 4,
+            pointBackgroundColor: '#94a3b8',
+            tension:          0.3,
+            spanGaps:         false,
+          },
+          {
+            label:            'NI average',
+            data:             YEARS.map(y => niRates[y] ?? null),
+            borderColor:      '#cbd5e1',
+            backgroundColor:  'transparent',
+            borderWidth:      1.5,
+            borderDash:       [2, 3],
+            pointRadius:      2,
+            pointHoverRadius: 4,
+            pointBackgroundColor: '#cbd5e1',
+            tension:          0.3,
+            spanGaps:         false,
+          },
+        ],
+      },
+      options: {
+        responsive:          true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              font:          { size: 11 },
+              color:         '#3d4f68',
+              boxWidth:      10,
+              boxHeight:     2,
+              padding:       14,
+              usePointStyle: true,
+              pointStyle:    'line',
+            },
+          },
+          tooltip: {
+            ...TOOLTIP_BASE,
+            displayColors: true,
+            boxWidth:  24,
+            boxHeight: 2,
+            callbacks: {
+              title: items => `${items[0].label}`,
+              label: ctx  => {
+                const v = ctx.parsed.y;
+                return v == null ? null : ` ${ctx.dataset.label}: ${v.toFixed(1)}`;
+              },
+            },
+            filter: item => item.parsed.y != null,
+          },
+        },
+        scales: {
+          x: {
+            grid:   AXIS_GRID,
+            ticks:  { ...AXIS_TICKS, maxTicksLimit: 11 },
+            border: { color: 'transparent' },
+          },
+          y: {
+            beginAtZero: true,
+            grid:   AXIS_GRID,
+            ticks:  { ...AXIS_TICKS, callback: v => v.toFixed(1) },
+            border: { color: 'transparent' },
+            title: {
+              display: true,
+              text:    'Monthly items per 1,000 patients',
+              color:   '#7b8fa8',
+              font:    { size: 11 },
+            },
+          },
+        },
+      },
+    });
+
+    // ---- Table ----
+    const tbody = $('context-table-body');
+    tbody.innerHTML = '';
+
+    YEARS.forEach(year => {
+      const pRate  = practiceRates[year];
+      const lcgR   = lcgRates[year];
+      const niR    = niRates[year];
+
+      const pCell  = pRate  != null ? pRate.toFixed(1)  : '—';
+      const lcgCell = lcgR  != null ? lcgR.toFixed(1)   : '—';
+      const niCell  = niR   != null ? niR.toFixed(1)    : '—';
+
+      // Subtle warm/cool tint on the practice cell vs LCG
+      let pClass = 'col-num';
+      if (pRate != null && lcgR != null) {
+        if (pRate > lcgR) pClass += ' rate-above';
+        else if (pRate < lcgR) pClass += ' rate-below';
+      }
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${year}</td>
+        <td class="${pClass}">${pCell}</td>
+        <td class="col-num">${lcgCell}</td>
+        <td class="col-num">${niCell}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    show(card);
+  }
+
+  /* =========================================================================
      Search / Autocomplete
      ========================================================================= */
 
@@ -775,11 +946,16 @@
      ========================================================================= */
 
   async function init() {
-    // Load the practices index for search autocomplete
+    // Load practices index and averages in parallel
+    const [indexRes, avgRes] = await Promise.allSettled([
+      fetch('data/practices-index.json'),
+      fetch('data/averages.json'),
+    ]);
+
     try {
-      const res = await fetch('data/practices-index.json');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      state.index = await res.json();
+      if (indexRes.status === 'rejected' || !indexRes.value.ok)
+        throw new Error(`HTTP ${indexRes.value?.status ?? 'network error'}`);
+      state.index = await indexRes.value.json();
 
       const countStr = fmt(state.index.length);
       setText('kpi-practices',   countStr);
@@ -787,6 +963,15 @@
     } catch (err) {
       console.error('Failed to load practices index:', err);
       showError('Could not load practice data. Try refreshing the page.');
+    }
+
+    try {
+      if (avgRes.status === 'rejected' || !avgRes.value.ok)
+        throw new Error(`HTTP ${avgRes.value?.status ?? 'network error'}`);
+      state.averages = await avgRes.value.json();
+    } catch (err) {
+      // Non-fatal: context section will just be hidden
+      console.warn('Could not load averages.json:', err);
     }
 
     search.init();
