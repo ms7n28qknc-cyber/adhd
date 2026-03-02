@@ -11,6 +11,16 @@ Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe
 Chart.defaults.font.size   = 12;
 Chart.defaults.color       = '#7b8fa8';
 
+/* ── HSC Trust name mapping ──────────────────────────────────────────────── */
+const LCG_FULL = {
+  'Belfast':       'Belfast Health & Social Care Trust',
+  'Northern':      'Northern Health & Social Care Trust',
+  'Southern':      'Southern Health & Social Care Trust',
+  'South Eastern': 'South Eastern Health & Social Care Trust',
+  'Western':       'Western Health & Social Care Trust',
+};
+function lcgFull(name) { return LCG_FULL[name] || name || ''; }
+
 /* ── Formatting helpers ──────────────────────────────────────────────────── */
 function fmtRate(r) {
   if (r === null || r === undefined) return '—';
@@ -205,7 +215,7 @@ function render(year) {
 function tableRow(rank, p, isTop) {
   const href = `index.html#practice/${p.id}`;
   const rankSpan = `<span class="rank-num${isTop ? ' rank-num--top' : ''}">${rank}</span>`;
-  const lcgSpan  = p.lcg ? `<span class="rank-lcg">${p.lcg}</span>` : '—';
+  const lcgSpan  = p.lcg ? `<span class="rank-lcg">${lcgFull(p.lcg)}</span>` : '—';
   const nameLink = `<a href="${href}" class="rankings-practice-link">${escHtml(p.surgeryName)}</a>
     ${p.doctorName ? `<br><small style="color:var(--text-3);font-weight:400;font-size:0.75rem">${escHtml(p.doctorName)}</small>` : ''}`;
   return `

@@ -104,6 +104,31 @@
   }
 
   /* =========================================================================
+     HSC Trust name mapping
+     ========================================================================= */
+
+  const LCG_FULL = {
+    'Belfast':       'Belfast Health & Social Care Trust',
+    'Northern':      'Northern Health & Social Care Trust',
+    'Southern':      'Southern Health & Social Care Trust',
+    'South Eastern': 'South Eastern Health & Social Care Trust',
+    'Western':       'Western Health & Social Care Trust',
+  };
+
+  const LCG_SHORT = {
+    'Belfast':       'Belfast HSCT',
+    'Northern':      'Northern HSCT',
+    'Southern':      'Southern HSCT',
+    'South Eastern': 'South Eastern HSCT',
+    'Western':       'Western HSCT',
+  };
+
+  /** Full trust name for tables and text. Falls back to raw value. */
+  function lcgFull(name)  { return LCG_FULL[name]  || name || ''; }
+  /** Abbreviated trust name for charts and tight spaces. Falls back to raw value. */
+  function lcgShort(name) { return LCG_SHORT[name] || name || ''; }
+
+  /* =========================================================================
      Month utilities
      ========================================================================= */
 
@@ -665,8 +690,8 @@
     // Check if there is any practice rate at all
     const hasAnyRate = YEARS.some(y => practiceRates[y] != null);
 
-    // Update LCG column header
-    $('context-lcg-header').textContent = `${lcgName} average`;
+    // Update LCG column header (full trust name in table)
+    $('context-lcg-header').textContent = `${lcgFull(lcgName)} average`;
 
     // ---- Chart ----
     if (state.charts.context) {
@@ -696,7 +721,7 @@
             spanGaps:         false,
           },
           {
-            label:            `${lcgName} average`,
+            label:            `${lcgShort(lcgName)} average`,
             data:             YEARS.map(y => lcgRates[y] ?? null),
             borderColor:      '#94a3b8',
             backgroundColor:  'transparent',

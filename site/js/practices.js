@@ -4,6 +4,15 @@
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
+  const LCG_SHORT = {
+    'Belfast':       'Belfast HSCT',
+    'Northern':      'Northern HSCT',
+    'Southern':      'Southern HSCT',
+    'South Eastern': 'South Eastern HSCT',
+    'Western':       'Western HSCT',
+  };
+  function lcgShort(name) { return LCG_SHORT[name] || name || ''; }
+
   function titleCase(str) {
     if (!str) return str;
     return str
@@ -77,7 +86,7 @@
         const doctor   = escHtml(titleCase(p.doctorName  || ''));
         const address  = escHtml(p.address  || '');
         const postcode = escHtml(p.postcode || '');
-        const lcg      = escHtml(p.lcg      || '');
+        const lcg      = escHtml(lcgShort(p.lcg));
 
         // Build the address/postcode/LCG line, skipping blanks
         const meta = [address, postcode, lcg].filter(Boolean).join(' · ');
