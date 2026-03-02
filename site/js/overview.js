@@ -54,62 +54,41 @@ async function main() {
 
   /* ── 1. Headline stats ─────────────────────────────────────────────────── */
 
-  let totalGross  = 0;
-  let totalItems  = 0;
-  let maxPractices = 0;
+  let totalItems = 0;
 
   for (const key of monthKeys) {
-    const m = months[key];
-    totalGross   += m.gross_cost;
-    totalItems   += m.total_items;
-    if (m.practices_prescribing > maxPractices) {
-      maxPractices = m.practices_prescribing;
-    }
+    totalItems += months[key].total_items;
   }
 
-  // % change: average monthly cost in first year vs last year
-  const firstYearKeys = monthKeys.filter(k => k.startsWith('2015'));
-  const lastYearKeys  = monthKeys.filter(k => k.startsWith('2025'));
-  const avgFirst = firstYearKeys.reduce((s, k) => s + months[k].gross_cost, 0) / firstYearKeys.length;
-  const avgLast  = lastYearKeys.reduce((s, k) =>  s + months[k].gross_cost, 0) / lastYearKeys.length;
-  const pctChange = ((avgLast - avgFirst) / avgFirst) * 100;
+  const totalPractices  = data.total_practices || 0;
+  const closedCount     = data.closed_practices_count || 0;
+  const activePractices = totalPractices - closedCount;
 
   const headlineData = [
     {
-      label: 'Total Gross Cost (2015–2025)',
-      value: '£' + fmtNum(totalGross / 1e6, 1) + 'm',
+      label: 'GP practices across NI have prescribed ADHD medication, 2015–2025',
+      value: fmtNum(totalPractices),
     },
     {
-      label: 'Total Items Prescribed (2015–2025)',
+      label: 'Currently active practices',
+      value: fmtNum(activePractices),
+    },
+    {
+      label: 'Practices closed during this period',
+      value: fmtNum(closedCount),
+    },
+    {
+      label: 'Total ADHD items prescribed (2015–2025)',
       value: fmtNum(totalItems),
-    },
-    {
-      label: 'Monthly Cost Change (2015 → 2025)',
-      value: fmtPct(pctChange),
-      cls:   pctChange > 0 ? 'stat-value--down' : 'stat-value--up',
-    },
-    {
-      label: 'Active Prescribing Practices (peak)',
-      value: fmtNum(maxPractices),
     },
   ];
 
   document.getElementById('headline-stats').innerHTML = headlineData.map(c => `
     <div class="stat-card">
       <div class="stat-label">${c.label}</div>
-      <div class="stat-value ${c.cls || ''}">${c.value}</div>
+      <div class="stat-value">${c.value}</div>
     </div>
   `).join('');
-
-  const closedCount = data.closed_practices_count || 0;
-  if (closedCount > 0) {
-    const noteEl = document.getElementById('closed-note');
-    noteEl.textContent =
-      `Note: ${closedCount} practices in this dataset appear to have closed at some point ` +
-      `during the 2015–2025 period. Their historical prescribing data is still viewable ` +
-      `on individual practice pages.`;
-    noteEl.classList.remove('hidden');
-  }
 
   /* ── 2. Monthly cost + items chart ────────────────────────────────────── */
 

@@ -497,7 +497,7 @@ def write_rankings(practices, practice_rates, out_dir):
     return path
 
 
-def write_overall_stats(overall, overall_practices_by_month, out_dir, closed_practices_count=0):
+def write_overall_stats(overall, overall_practices_by_month, out_dir, closed_practices_count=0, total_practices=0):
     months_out = {}
     for month in sorted(overall.keys()):
         drugs = overall[month]
@@ -529,6 +529,7 @@ def write_overall_stats(overall, overall_practices_by_month, out_dir, closed_pra
 
     path = os.path.join(out_dir, "overall-stats.json")
     write_json(path, {
+        "total_practices": total_practices,
         "closed_practices_count": closed_practices_count,
         "months": months_out,
     })
@@ -588,7 +589,7 @@ def main(data_dir="/data", out_dir="/site/data"):
     print(f"  {len(prac_files)} files written")
 
     print("Writing overall-stats.json …")
-    stats_path = write_overall_stats(overall, overall_practices_by_month, out_dir, closed_count)
+    stats_path = write_overall_stats(overall, overall_practices_by_month, out_dir, closed_count, len(practices))
 
     print("Writing averages.json …")
     avg_path = write_averages(lcg_rates, ni_rates, out_dir)
