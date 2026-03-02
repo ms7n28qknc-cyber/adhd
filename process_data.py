@@ -479,6 +479,24 @@ def write_practice_files(practices, rx_by_practice, out_dir, practice_rates=None
     return practices_dir
 
 
+def write_rankings(practices, practice_rates, out_dir):
+    """Write rankings.json — per-practice yearly per-capita rates for the rankings page."""
+    rankings = []
+    for prac_no, info in sorted(practices.items()):
+        rates = practice_rates.get(prac_no, {})
+        rankings.append({
+            "id": prac_no,
+            "surgeryName": info["surgeryName"],
+            "doctorName": info["doctorName"],
+            "lcg": info["lcg"],
+            "closed": info.get("closed", False),
+            "rates": rates,
+        })
+    path = os.path.join(out_dir, "rankings.json")
+    write_json(path, rankings)
+    return path
+
+
 def write_overall_stats(overall, overall_practices_by_month, out_dir, closed_practices_count=0):
     months_out = {}
     for month in sorted(overall.keys()):
@@ -575,6 +593,9 @@ def main(data_dir="/data", out_dir="/site/data"):
     print("Writing averages.json …")
     avg_path = write_averages(lcg_rates, ni_rates, out_dir)
 
+    print("Writing rankings.json …")
+    rankings_path = write_rankings(practices, practice_rates, out_dir)
+
     # ------------------------------------------------------------------
     # Summary
     # ------------------------------------------------------------------
@@ -608,6 +629,7 @@ def main(data_dir="/data", out_dir="/site/data"):
     )
     print(f"  overall-stats.json     : {file_size(stats_path)}")
     print(f"  averages.json          : {file_size(avg_path)}")
+    print(f"  rankings.json          : {file_size(rankings_path)}")
     print("=" * 60)
 
 

@@ -1336,3 +1336,155 @@ td.rate-above {
 td.rate-below {
   background: rgba(37, 99, 235, 0.07);   /* accent blue, very faint */
 }
+
+/* =============================================================================
+   Rankings page
+   ============================================================================= */
+
+/* ── Context notice (amber banner above chart + table) ────────────────────── */
+.rankings-context-notice {
+  background: #fffbeb;
+  border: 1.5px solid #f59e0b;
+  border-left: 5px solid #d97706;
+  border-radius: var(--r);
+  padding: 1.125rem 1.375rem;
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+}
+
+.rankings-context-icon {
+  flex-shrink: 0;
+  color: #d97706;
+  margin-top: 0.1rem;
+}
+
+.rankings-context-notice p {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: #78350f;
+  margin: 0;
+}
+
+.rankings-context-notice p + p {
+  margin-top: 0.5rem;
+}
+
+.rankings-context-notice strong {
+  font-weight: 600;
+  color: #92400e;
+}
+
+/* ── Year selector pills ─────────────────────────────────────────────────── */
+.year-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.75rem;
+}
+
+.year-btn {
+  padding: 0.35rem 0.875rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-mid);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  line-height: 1;
+}
+
+.year-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.year-btn--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.year-btn--active:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #fff;
+}
+
+/* ── Bar chart wrapper ───────────────────────────────────────────────────── */
+.rankings-bar-wrap {
+  height: 340px;
+  margin-bottom: 0;
+}
+
+/* ── Rankings table ──────────────────────────────────────────────────────── */
+.rank-num {
+  font-weight: 700;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  min-width: 2rem;
+  display: inline-block;
+}
+
+.rank-num--top {
+  color: var(--accent);
+}
+
+/* Divider row separating top 10 from bottom 10 */
+.rankings-divider-row td {
+  background: var(--navy);
+  color: rgba(255,255,255,0.7);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  letter-spacing: 0.03em;
+  text-align: center;
+}
+
+/* Rate column */
+.col-rate {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* Practice name links inside table */
+.rankings-practice-link {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.rankings-practice-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(37,99,235,0.4);
+  text-underline-offset: 2px;
+}
+
+/* Short caveat below rankings table */
+.rankings-caveat {
+  font-size: 0.8rem;
+  color: var(--text-3);
+  font-style: italic;
+  line-height: 1.5;
+  margin-top: 1rem;
+}
+
+/* No-data state */
+.rankings-no-data {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+
+/* LCG tag in table */
+.rank-lcg {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  font-weight: 400;
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rankings of GP practices in Northern Ireland by ADHD prescribing rate per 1,000 registered patients.">
+  <title>Practice Rankings — ADHD Prescribing NI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="site-brand">
+        <span class="brand-pill">NI</span>
+        ADHD Prescribing
+      </a>
+      <nav class="site-nav" aria-label="Site navigation">
+        <a href="overview.html" class="nav-link">Overview</a>
+        <a href="practices.html" class="nav-link">All practices</a>
+        <a href="rankings.html" class="nav-link nav-link--active" aria-current="page">Rankings</a>
+        <a href="https://themoment.blog" target="_blank" rel="noopener" class="nav-link">themoment.blog</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Page banner -->
+  <div class="browse-banner">
+    <div class="container">
+      <div class="browse-banner-inner">
+        <div>
+          <h1 class="browse-title">Practice Rankings</h1>
+          <p class="browse-subtitle">Average monthly ADHD items per 1,000 registered patients</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="container overview-page" id="rankings-page">
+
+      <!-- Context notice — prominent amber banner -->
+      <div class="rankings-context-notice" role="note" aria-label="Data context notice">
+        <svg class="rankings-context-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+          <path d="M12 9v4"/><path d="M12 17h.01"/>
+        </svg>
+        <div>
+          <p><strong>Important context — please read before interpreting these rankings.</strong></p>
+          <p>
+            This ranking shows the average monthly number of ADHD prescriptions issued per 1,000
+            registered patients at each GP practice. A higher rate does not mean a practice is
+            over-prescribing, and a lower rate does not mean patients are being under-served.
+          </p>
+          <p>
+            Prescribing rates are shaped by many factors outside a practice's direct control:
+            local demographics, the age profile of registered patients, proximity to specialist
+            ADHD services, shared-care arrangements with secondary care, and historical referral
+            pathways. Practices with a high proportion of young adults or those near a specialist
+            ADHD clinic may legitimately prescribe at higher rates than the NI average.
+          </p>
+          <p>
+            <strong>These figures should not be used to make judgements about the quality
+            of care provided by any practice.</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- Year selector -->
+      <div class="year-selector" id="year-selector" role="group" aria-label="Select year"></div>
+
+      <!-- Bar chart -->
+      <div class="chart-card overview-chart-card" id="bar-chart-card">
+        <div class="chart-card-hd">
+          <div class="chart-title">Top 10 practices by prescribing rate</div>
+          <div class="chart-desc" id="bar-chart-desc">Average monthly ADHD items per 1,000 registered patients</div>
+        </div>
+        <div class="rankings-bar-wrap">
+          <canvas id="rankings-bar-chart" aria-label="Top 10 practices bar chart" role="img"></canvas>
+        </div>
+      </div>
+
+      <!-- Rankings table -->
+      <div class="table-card" id="rankings-table-card">
+        <div class="table-card-hd">
+          <h2 class="section-title">Full rankings</h2>
+          <p class="table-desc" id="rankings-table-desc">Top 10 highest and bottom 10 lowest prescribing practices</p>
+        </div>
+        <div id="rankings-no-data" class="rankings-no-data hidden">
+          No data available for this selection.
+        </div>
+        <div class="table-scroll" id="rankings-table-wrap">
+          <table class="data-table" id="rankings-table">
+            <thead>
+              <tr>
+                <th scope="col">Rank</th>
+                <th scope="col">Practice</th>
+                <th scope="col">LCG</th>
+                <th scope="col" class="col-rate">Rate<br><small style="font-weight:400;font-size:0.7rem">(items / 1k patients / month)</small></th>
+              </tr>
+            </thead>
+            <tbody id="rankings-tbody"></tbody>
+          </table>
+        </div>
+        <p class="rankings-caveat">
+          Rate = average monthly ADHD items per 1,000 registered patients for the selected period.
+          Closed practices and practices with no registered patient data for the selected year are excluded.
+          Differences in rates reflect local demographics, referral patterns, and shared-care arrangements —
+          not the quality of care provided.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-primary">
+        <p class="footer-source">
+          Data: <strong>GP Prescribing Data and GP Practice List Sizes</strong> from
+          <a href="https://www.opendatani.gov.uk" target="_blank" rel="noopener">OpenDataNI</a>
+          (Business Services Organisation)
+        </p>
+        <p class="footer-licence">
+          Licensed under the
+          <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">UK Open Government Licence (OGL) v3.0</a>
+        </p>
+      </div>
+      <div class="footer-secondary">
+        <p>Analysis by <a href="https://themoment.blog" target="_blank" rel="noopener">themoment.blog</a></p>
+      </div>
+      <p class="footer-ai">
+        Built with AI assistance. Data from <a href="https://www.opendatani.gov.uk" target="_blank" rel="noopener">OpenDataNI</a> (OGL).
+        Report issues: <a href="mailto:john@themoment.blog">john@themoment.blog</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/rankings.js"></script>
+</body>
+</html>
