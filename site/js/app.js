@@ -233,6 +233,72 @@
     return new Date(+y, +m - 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
   }
 
+  function renderPracticeSize(data) {
+    const el = $('practice-size-row');
+    const reg = data.registered_patients || {};
+    const months = Object.keys(reg).sort();
+
+    if (months.length === 0) { hide(el); return; }
+
+    // Most recent non-zero count
+    let currentMonth = null, currentCount = 0;
+    for (let i = months.length - 1; i >= 0; i--) {
+      const v = reg[months[i]];
+      if (v !== null && v !== undefined && v > 0) {
+        currentMonth = months[i]; currentCount = v; break;
+      }
+    }
+    if (!currentMonth) { hide(el); return; }
+
+    // First non-zero count (for "change since" text)
+    let firstMonth = null, firstCount = 0;
+    for (const m of months) {
+      const v = reg[m];
+      if (v !== null && v !== undefined && v > 0) {
+        firstMonth = m; firstCount = v; break;
+      }
+    }
+
+    // Label / count / date
+    $('ps-label').textContent = data.closed ? 'Last recorded' : 'Registered patients';
+    $('ps-count').textContent = fmt(currentCount);
+    $('ps-date').textContent  = (data.closed ? '' : 'as of ') + formatClosedDate(currentMonth);
+
+    // Change text
+    const changeEl = $('ps-change');
+    if (firstMonth && firstMonth !== currentMonth) {
+      const diff = currentCount - firstCount;
+      changeEl.textContent = `${diff >= 0 ? '+' : ''}${fmt(diff)} patients since ${formatClosedDate(firstMonth)}`;
+    } else {
+      changeEl.textContent = '';
+    }
+
+    // Sparkline — all non-null months (zeros included to show closure shape)
+    const sparkPts = months
+      .map(m => ({ m, v: reg[m] }))
+      .filter(p => p.v !== null && p.v !== undefined);
+
+    const line = $('ps-sparkline-line');
+    if (sparkPts.length >= 2) {
+      const vals = sparkPts.map(p => p.v);
+      const minV = Math.min(...vals);
+      const maxV = Math.max(...vals);
+      const range = maxV - minV || 1;
+      const W = 160, H = 36, pad = 2;
+      const pts = sparkPts.map((p, i) => {
+        const x = pad + (i / (sparkPts.length - 1)) * (W - 2 * pad);
+        const y = H - pad - ((p.v - minV) / range) * (H - 2 * pad);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      });
+      line.setAttribute('points', pts.join(' '));
+      line.setAttribute('stroke', data.closed ? '#94a3b8' : '#2563eb');
+    } else {
+      line.setAttribute('points', '');
+    }
+
+    show(el);
+  }
+
   function renderPractice(data) {
     // ---- Closed-practice banner ----
     const banner = $('closed-banner');
@@ -255,6 +321,9 @@
     $('practice-address').textContent    = data.address                        || '';
     $('practice-postcode').textContent   = data.postcode                       || '';
     $('practice-id').textContent         = data.id;
+
+    // ---- Practice size (patient count + sparkline) ----
+    renderPracticeSize(data);
 
     // ---- Determine month range ----
     // Always plot the full canonical period so every month is represented

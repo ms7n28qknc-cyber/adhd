@@ -1488,3 +1488,69 @@ td.rate-below {
   color: var(--text-3);
   font-weight: 400;
 }
+
+/* =============================================================================
+   Practice size row  (registered patients + sparkline)
+   ============================================================================= */
+
+.practice-size-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 1rem;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 1.25rem;
+}
+
+.ps-main {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ps-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ps-count {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ps-date {
+  font-size: 0.8125rem;
+  color: var(--text-2);
+}
+
+.ps-spark-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-left: auto;
+}
+
+.ps-sparkline {
+  width: 120px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.ps-change {
+  font-size: 0.8125rem;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .ps-spark-wrap { margin-left: 0; }
+}

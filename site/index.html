@@ -169,6 +169,22 @@
           </div>
         </header>
 
+        <!-- Practice size row (patient count + sparkline) -->
+        <div class="practice-size-row hidden" id="practice-size-row" aria-label="Registered patients">
+          <div class="ps-main">
+            <span class="ps-label" id="ps-label">Registered patients</span>
+            <strong class="ps-count" id="ps-count"></strong>
+            <span class="ps-date" id="ps-date"></span>
+          </div>
+          <div class="ps-spark-wrap">
+            <svg class="ps-sparkline" viewBox="0 0 160 36" preserveAspectRatio="none" aria-hidden="true">
+              <polyline id="ps-sparkline-line" fill="none" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" points=""/>
+            </svg>
+            <span class="ps-change" id="ps-change"></span>
+          </div>
+        </div>
+
         <!-- Closed-practice notice (hidden for active practices) -->
         <div id="closed-banner" class="closed-banner hidden" role="note">
           <svg class="closed-banner-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
