@@ -12,6 +12,7 @@ Outputs to /site/data/:
   practices-index.json          - all practices for search/autocomplete
   practices/{id}.json           - per-practice detail
   overall-stats.json            - NI-wide monthly aggregates
+  averages.json                 - per-capita yearly rates (NI, LCG, practice)
 
 Optional CLI overrides:
   --data-dir <path>   default: /data
@@ -323,6 +324,110 @@ def build_prescribing_for_practice(prac_rx):
 
 
 # ---------------------------------------------------------------------------
+# Step 3.5 – Per-capita yearly rates
+# ---------------------------------------------------------------------------
+
+def build_yearly_rates(practices, rx_by_practice, month_cols):
+    """
+    For each practice, LCG, and NI as a whole, calculate the average monthly
+    ADHD items per 1,000 registered patients for each calendar year.
+
+    Formula per year:
+        rate = (total_items_that_year / 12) / (avg_registered_patients / 1000)
+             = total_items * 1000 / (12 * avg_registered_patients)
+
+    A practice is excluded from a year's denominator if its average registered
+    patients for that year is 0 (closed / not yet open).
+
+    Returns:
+        practice_rates : {prac_no: {year_str: float|None}}
+        lcg_rates      : {lcg_name: {year_str: float|None}}
+        ni_rates       : {year_str: float|None}
+    """
+    # Group month columns by year
+    months_by_year = defaultdict(list)
+    for m in month_cols:
+        months_by_year[m[:4]].append(m)
+    years = sorted(months_by_year)
+
+    # NI and LCG accumulators: year -> {items, patients}
+    ni_acc  = {y: {"items": 0, "patients": 0.0} for y in years}
+    lcg_acc = defaultdict(lambda: {y: {"items": 0, "patients": 0.0} for y in years})
+
+    practice_rates = {}
+
+    for prac_no, info in practices.items():
+        lcg = info["lcg"]
+        reg = info["registered_patients"]
+        prac_rx = rx_by_practice.get(prac_no, {})
+
+        rates = {}
+        for year in years:
+            yr_months = months_by_year[year]
+
+            # Mean registered patients (skip null months; treat as not recorded)
+            patient_vals = [reg[m] for m in yr_months
+                            if reg.get(m) is not None]
+            avg_patients = (sum(patient_vals) / len(patient_vals)
+                            if patient_vals else 0.0)
+
+            if avg_patients <= 0:
+                rates[year] = None
+                continue
+
+            # Total ADHD items across this year's months
+            year_items = sum(
+                agg["items"]
+                for m in yr_months if m in prac_rx
+                for brands in prac_rx[m].values()
+                for agg in brands.values()
+            )
+
+            rate = round(year_items * 1000 / (12 * avg_patients), 2)
+            rates[year] = rate
+
+            # Accumulate into NI and LCG totals
+            ni_acc[year]["items"]    += year_items
+            ni_acc[year]["patients"] += avg_patients
+            if lcg:
+                lcg_acc[lcg][year]["items"]    += year_items
+                lcg_acc[lcg][year]["patients"] += avg_patients
+
+        practice_rates[prac_no] = rates
+
+    # Compute NI rates
+    ni_rates = {}
+    for year in years:
+        acc = ni_acc[year]
+        if acc["patients"] > 0:
+            ni_rates[year] = round(acc["items"] * 1000 / (12 * acc["patients"]), 2)
+        else:
+            ni_rates[year] = None
+
+    # Compute LCG rates
+    lcg_rates = {}
+    for lcg, yr_map in lcg_acc.items():
+        lcg_rates[lcg] = {}
+        for year in years:
+            acc = yr_map[year]
+            if acc["patients"] > 0:
+                lcg_rates[lcg][year] = round(
+                    acc["items"] * 1000 / (12 * acc["patients"]), 2
+                )
+            else:
+                lcg_rates[lcg][year] = None
+
+    return practice_rates, lcg_rates, ni_rates
+
+
+def write_averages(lcg_rates, ni_rates, out_dir):
+    """Write averages.json with NI-wide and LCG-level yearly rates."""
+    path = os.path.join(out_dir, "averages.json")
+    write_json(path, {"ni": ni_rates, "lcg": lcg_rates})
+    return path
+
+
+# ---------------------------------------------------------------------------
 # Step 4 – Write outputs
 # ---------------------------------------------------------------------------
 
@@ -351,8 +456,9 @@ def write_practices_index(practices, out_dir):
     return path
 
 
-def write_practice_files(practices, rx_by_practice, out_dir):
+def write_practice_files(practices, rx_by_practice, out_dir, practice_rates=None):
     practices_dir = os.path.join(out_dir, "practices")
+    practice_rates = practice_rates or {}
     for prac_no, info in practices.items():
         prac_rx = rx_by_practice.get(prac_no, {})
         prescribing = build_prescribing_for_practice(prac_rx)
@@ -366,6 +472,7 @@ def write_practice_files(practices, rx_by_practice, out_dir):
             "closed": info.get("closed", False),
             "closedDate": info.get("closedDate"),
             "registered_patients": info["registered_patients"],
+            "yearlyRatePerCapita": practice_rates.get(prac_no, {}),
             "prescribing": prescribing,
         }
         write_json(os.path.join(practices_dir, f"{prac_no}.json"), doc)
@@ -447,16 +554,26 @@ def main(data_dir="/data", out_dir="/site/data"):
             closed_count += 1
     print(f"  {closed_count} practices identified as closed")
 
+    print("Building per-capita yearly rates …")
+    practice_rates, lcg_rates, ni_rates = build_yearly_rates(
+        practices, rx_by_practice, month_cols
+    )
+    print(f"  {len(practice_rates)} practices, {len(lcg_rates)} LCGs, "
+          f"{len(ni_rates)} years")
+
     print("Writing practices-index.json …")
     idx_path = write_practices_index(practices, out_dir)
 
     print("Writing per-practice JSON files …")
-    prac_dir = write_practice_files(practices, rx_by_practice, out_dir)
+    prac_dir = write_practice_files(practices, rx_by_practice, out_dir, practice_rates)
     prac_files = [f for f in os.listdir(prac_dir) if f.endswith(".json")]
     print(f"  {len(prac_files)} files written")
 
     print("Writing overall-stats.json …")
     stats_path = write_overall_stats(overall, overall_practices_by_month, out_dir, closed_count)
+
+    print("Writing averages.json …")
+    avg_path = write_averages(lcg_rates, ni_rates, out_dir)
 
     # ------------------------------------------------------------------
     # Summary
@@ -490,6 +607,7 @@ def main(data_dir="/data", out_dir="/site/data"):
         f"({len(prac_files)} files)"
     )
     print(f"  overall-stats.json     : {file_size(stats_path)}")
+    print(f"  averages.json          : {file_size(avg_path)}")
     print("=" * 60)
 
 

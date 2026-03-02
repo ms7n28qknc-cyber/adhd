@@ -245,6 +245,31 @@
           </div>
         </div>
 
+        <!-- Prescribing in context -->
+        <div class="table-card" id="context-card">
+          <div class="table-card-hd">
+            <h2 class="section-title">Prescribing in context</h2>
+            <p class="table-desc">Average monthly ADHD items per 1,000 registered patients, by year</p>
+          </div>
+          <div class="chart-wrap context-chart-wrap">
+            <canvas id="chart-context" aria-label="Per-capita prescribing comparison chart" role="img"></canvas>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table" id="context-table">
+              <thead>
+                <tr>
+                  <th scope="col">Year</th>
+                  <th scope="col" class="col-num">This practice</th>
+                  <th scope="col" class="col-num" id="context-lcg-header">LCG average</th>
+                  <th scope="col" class="col-num">NI average</th>
+                </tr>
+              </thead>
+              <tbody id="context-table-body"></tbody>
+            </table>
+          </div>
+          <p class="context-caveat">Differences in prescribing rates reflect many factors including patient demographics, local referral pathways, and shared care arrangements. Higher or lower rates do not indicate better or worse care.</p>
+        </div>
+
         </div><!-- /practice-content -->
 
       </div>
