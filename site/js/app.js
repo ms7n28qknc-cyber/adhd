@@ -721,19 +721,6 @@
             spanGaps:         false,
           },
           {
-            label:            `${lcgShort(lcgName)} average`,
-            data:             YEARS.map(y => lcgRates[y] ?? null),
-            borderColor:      '#94a3b8',
-            backgroundColor:  'transparent',
-            borderWidth:      1.5,
-            borderDash:       [5, 4],
-            pointRadius:      2,
-            pointHoverRadius: 4,
-            pointBackgroundColor: '#94a3b8',
-            tension:          0.3,
-            spanGaps:         false,
-          },
-          {
             label:            'NI average',
             data:             YEARS.map(y => niRates[y] ?? null),
             borderColor:      '#cbd5e1',
@@ -743,6 +730,19 @@
             pointRadius:      2,
             pointHoverRadius: 4,
             pointBackgroundColor: '#cbd5e1',
+            tension:          0.3,
+            spanGaps:         false,
+          },
+          {
+            label:            `${lcgShort(lcgName)} average`,
+            data:             YEARS.map(y => lcgRates[y] ?? null),
+            borderColor:      '#94a3b8',
+            backgroundColor:  'transparent',
+            borderWidth:      1.5,
+            borderDash:       [5, 4],
+            pointRadius:      2,
+            pointHoverRadius: 4,
+            pointBackgroundColor: '#94a3b8',
             tension:          0.3,
             spanGaps:         false,
           },
@@ -816,18 +816,18 @@
       const niCell  = niR   != null ? niR.toFixed(1)    : '—';
 
       // Subtle warm/cool tint on the practice cell vs LCG
-      let pClass = 'col-num';
+      let pClass = '';
       if (pRate != null && lcgR != null) {
-        if (pRate > lcgR) pClass += ' rate-above';
-        else if (pRate < lcgR) pClass += ' rate-below';
+        if (pRate > lcgR) pClass = 'rate-above';
+        else if (pRate < lcgR) pClass = 'rate-below';
       }
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${year}</td>
-        <td class="${pClass}">${pCell}</td>
-        <td class="col-num">${lcgCell}</td>
-        <td class="col-num">${niCell}</td>
+        <td${pClass ? ` class="${pClass}"` : ''}>${pCell}</td>
+        <td>${niCell}</td>
+        <td>${lcgCell}</td>
       `;
       tbody.appendChild(tr);
     });
