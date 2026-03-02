@@ -205,11 +205,14 @@
       const data = await res.json();
       state.practice = data;
       renderPractice(data);
-      renderContext(data);
 
       // Swap skeleton → content
       hide($('practice-skeleton'));
       reveal($('practice-content'), 'is-revealing');
+
+      // Render the context comparison chart AFTER practice-content is visible
+      // so that Chart.js measures real canvas dimensions, not zero.
+      requestAnimationFrame(() => renderContext(data));
 
       document.title = `${titleCase(data.surgeryName || data.doctorName || '')} — ADHD Prescribing NI`;
     } catch (err) {
