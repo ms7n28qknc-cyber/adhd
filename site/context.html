@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ADHD prescribing in context: mental health indicators across Northern Ireland's Health Trusts, 2019–2023.">
+  <title>ADHD in Context — ADHD Prescribing NI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/context.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="site-brand">
+        <span class="brand-pill">NI</span>
+        ADHD Prescribing
+      </a>
+      <nav class="site-nav" aria-label="Site navigation">
+        <a href="overview.html" class="nav-link">Overview</a>
+        <a href="context.html" class="nav-link nav-link--active" aria-current="page">ADHD in Context</a>
+        <a href="practices.html" class="nav-link">All practices</a>
+        <a href="rankings.html" class="nav-link">Rankings</a>
+        <a href="https://themoment.blog" target="_blank" rel="noopener" class="nav-link">themoment.blog</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Page banner -->
+  <div class="browse-banner">
+    <div class="container">
+      <div class="browse-banner-inner">
+        <div>
+          <h1 class="browse-title">ADHD in Context</h1>
+          <p class="browse-subtitle">Mental health indicators across Northern Ireland's Health Trusts</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="container context-page">
+
+      <!-- Placeholder data notice (hidden when real data loaded) -->
+      <div class="ctx-placeholder-notice hidden" id="placeholder-notice" role="note">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span><strong>Placeholder data.</strong> The HSCIMS figures shown below are illustrative only. Place
+        <code>hscims-report-2025-data-tables-by-area.xlsx</code> in <code>/data</code> and run
+        <code>extract_hscims.py</code> to populate this page with real values.</span>
+      </div>
+
+      <!-- ================================================================
+           Section 1 — Mental Health Prescribing by Trust
+           ================================================================ -->
+      <section class="ctx-section" id="section-prescribing">
+        <div class="ctx-section-hd">
+          <h2 class="ctx-section-title">Mental Health Prescribing by Trust</h2>
+          <p class="ctx-section-desc">
+            Mood and anxiety prescription rates per 1,000 population alongside ADHD
+            medication rates per 1,000 registered patients, by HSC Trust for 2023.
+            This shows the broader mental health prescribing landscape that ADHD sits within.
+          </p>
+        </div>
+
+        <!-- Bar chart: M&A avg + most deprived + ADHD line (2023) -->
+        <div class="chart-card">
+          <div class="chart-card-hd">
+            <div class="chart-title">Mood &amp; Anxiety Prescribing vs ADHD Rate, 2023</div>
+            <div class="chart-desc">
+              Bars: mood &amp; anxiety prescriptions per 1,000 population (Trust average and most deprived quintile).
+              Line: ADHD items per 1,000 registered patients (right axis).
+            </div>
+          </div>
+          <div class="chart-wrap ctx-chart-wrap">
+            <canvas id="ma-bar-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Trust selector for the table below -->
+        <div class="ctx-trust-selector" id="ma-trust-selector" role="group" aria-label="Select Trust"></div>
+
+        <!-- Detail table (per-trust, all years) -->
+        <div class="table-card">
+          <div class="table-card-hd">
+            <div class="section-title" id="ma-table-title">—</div>
+            <div class="table-desc">
+              Mood &amp; anxiety (per 1,000 pop.) and ADHD items (per 1,000 patients), 2019–2023.
+              Deprivation gap = most deprived quintile minus Trust average.
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Year</th>
+                  <th class="col-num">M&amp;A Trust avg<br><span class="th-unit">per 1,000 pop.</span></th>
+                  <th class="col-num">M&amp;A most deprived<br><span class="th-unit">per 1,000 pop.</span></th>
+                  <th class="col-num">Deprivation gap</th>
+                  <th class="col-num">ADHD items<br><span class="th-unit">per 1,000 patients</span></th>
+                </tr>
+              </thead>
+              <tbody id="ma-tbody">
+                <tr><td colspan="5" class="ctx-loading">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="ctx-denom-note" id="ma-denom-note"></p>
+      </section>
+
+      <!-- ================================================================
+           Section 2 — Self-Harm Admissions by Trust
+           ================================================================ -->
+      <section class="ctx-section" id="section-self-harm">
+        <div class="ctx-section-hd">
+          <h2 class="ctx-section-title">Self-Harm Admissions by Trust</h2>
+          <p class="ctx-section-desc">
+            Standardised hospital admission rates for self-harm, per 1,000 population.
+            Figures use five-year rolling averages ending in the year shown.
+            Deprivation gaps are particularly pronounced in Belfast and Western Trusts.
+          </p>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-hd">
+            <div class="chart-title">Self-Harm Admissions per 1,000 Population</div>
+            <div class="chart-desc">All Trusts and NI average. Rolling five-year periods — label shows end year.</div>
+          </div>
+          <div class="chart-wrap ctx-chart-wrap">
+            <canvas id="sh-line-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-card-hd">
+            <div class="section-title">Self-Harm Admissions by Trust and Year</div>
+            <div class="table-desc">Admissions per 1,000 population (five-year rolling). ADHD prescribing rate shown for comparison.</div>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table" id="sh-table">
+              <thead></thead>
+              <tbody><tr><td class="ctx-loading">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           Section 3 — Suicide Rates by Trust
+           ================================================================ -->
+      <section class="ctx-section" id="section-suicide">
+        <div class="ctx-section-hd">
+          <h2 class="ctx-section-title">Suicide Rates by Trust</h2>
+          <p class="ctx-section-desc">
+            Standardised death rates from suicide, per 1,000 population.
+            As with self-harm, rates use five-year rolling averages and are
+            markedly higher in the most deprived areas.
+          </p>
+        </div>
+
+        <!-- Crisis notice -->
+        <div class="ctx-crisis-notice" role="note">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span>If you or someone you know is in crisis, contact
+            <strong>Lifeline</strong> on <a href="tel:08088088000">0808 808 8000</a>
+            (free, 24 hours).
+          </span>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-hd">
+            <div class="chart-title">Suicide Rates per 1,000 Population</div>
+            <div class="chart-desc">All Trusts and NI average. Rolling five-year periods — label shows end year.</div>
+          </div>
+          <div class="chart-wrap ctx-chart-wrap">
+            <canvas id="sui-line-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-card-hd">
+            <div class="section-title">Suicide Rates by Trust and Year</div>
+            <div class="table-desc">Deaths per 1,000 population (five-year rolling). ADHD prescribing rate shown for comparison.</div>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table" id="sui-table">
+              <thead></thead>
+              <tbody><tr><td class="ctx-loading">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           Section 4 — Why This Matters for ADHD
+           ================================================================ -->
+      <section class="ctx-section" id="section-editorial">
+        <div class="ctx-section-hd">
+          <h2 class="ctx-section-title">Why This Matters for ADHD</h2>
+        </div>
+
+        <div class="ctx-editorial">
+          <p>
+            ADHD does not exist in isolation. It sits within a broader landscape of mental health need
+            that, in Northern Ireland, is among the most acute in the UK. The indicators on this page
+            — mood and anxiety prescribing, self-harm admissions, and suicide rates — are not separate
+            issues. For many people they are interconnected, and ADHD is frequently at the centre of
+            that connection.
+          </p>
+          <p>
+            Research consistently shows that undiagnosed or untreated ADHD is associated with
+            significantly elevated risk of substance misuse, self-harm, depression, anxiety, and
+            contact with the criminal justice system. A landmark study found that
+            <strong>around 25% of the prison population meet diagnostic criteria for ADHD</strong>
+            — a figure that speaks directly to what happens when the condition goes unrecognised
+            through childhood and into adulthood.
+            <cite class="ctx-cite">(Young et al., <em>Psychological Medicine</em>, 2015)</cite>
+          </p>
+          <p>
+            Early diagnosis and appropriate prescribing in primary care is one of the most
+            cost-effective interventions available. The variation in ADHD prescribing rates
+            across NI's Health Trusts — visible throughout this site — reflects unequal access
+            to assessment and treatment, not differences in underlying need.
+          </p>
+          <p>
+            The deprivation gradients visible in every indicator on this page are stark. The most
+            deprived communities consistently show higher rates of mood and anxiety prescribing,
+            self-harm admissions, and suicide — and those same communities are often the least
+            well-served by specialist ADHD services. This page is an attempt to make that
+            connection visible.
+          </p>
+          <p class="ctx-editorial-placeholder">
+            <em>[Editorial note: this section will be updated with the author's own analysis.
+            The statistics and citations above are accurate; the framing text is a working draft.]</em>
+          </p>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           Section 5 — About This Data
+           ================================================================ -->
+      <section class="ctx-section" id="section-about">
+        <div class="ctx-section-hd">
+          <h2 class="ctx-section-title">About This Data</h2>
+        </div>
+
+        <div class="table-card">
+          <div class="table-scroll">
+            <table class="data-table ctx-sources-table">
+              <thead>
+                <tr>
+                  <th>Indicator</th>
+                  <th>Source</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Mood &amp; anxiety prescription rate</td>
+                  <td>NI Health and Social Care Inequalities Monitoring System (HSCIMS), Annual Report 2025, Department of Health</td>
+                  <td>Persons prescribed per 1,000 population, standardised. Years 2019–2023.</td>
+                </tr>
+                <tr>
+                  <td>Self-harm admissions</td>
+                  <td>HSCIMS 2025</td>
+                  <td>Hospital admissions per 1,000 population (converted from per 100,000). Five-year rolling averages; label shows end year of each period.</td>
+                </tr>
+                <tr>
+                  <td>Suicide death rate</td>
+                  <td>HSCIMS 2025</td>
+                  <td>Deaths per 1,000 population (converted from per 100,000). Five-year rolling averages. All rates age-standardised.</td>
+                </tr>
+                <tr>
+                  <td>ADHD prescribing rate</td>
+                  <td>GP Prescribing Data, Business Services Organisation (BSO), via <a href="https://www.opendatani.gov.uk" target="_blank" rel="noopener">OpenDataNI</a></td>
+                  <td>Items prescribed per 1,000 <em>registered GP patients</em>. This denominator differs from the population-based denominators used in HSCIMS indicators — direct numerical comparison should be made with caution.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <p class="ctx-footnote">
+          <strong>Denominator note:</strong> ADHD rates on this page are calculated from items prescribed
+          per 1,000 registered GP patients. All other mental health indicators use persons prescribed or
+          events per 1,000 general population. These denominators differ slightly and direct numerical
+          comparison should be made with caution.
+        </p>
+
+        <p class="ctx-footnote">
+          Health inequalities data covers 2019–2023. Self-harm and suicide figures use five-year rolling
+          averages. All rates have been standardised to per 1,000 population for consistency.
+          Source report:
+          <a href="https://www.health-ni.gov.uk/topics/statistics-and-research/health-inequalities"
+             target="_blank" rel="noopener">NI Department of Health — Health Inequalities</a>.
+        </p>
+      </section>
+
+    </div><!-- /.container -->
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-primary">
+        <p class="footer-source">
+          Data: <strong>GP Prescribing Data</strong> (BSO / OpenDataNI) and
+          <strong>HSCIMS 2025</strong> (NI Department of Health)
+        </p>
+        <p class="footer-licence">
+          GP prescribing data licensed under the
+          <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+             target="_blank" rel="noopener">UK Open Government Licence (OGL) v3.0</a>
+        </p>
+      </div>
+      <div class="footer-secondary">
+        <p>Analysis by <a href="https://themoment.blog" target="_blank" rel="noopener">themoment.blog</a></p>
+      </div>
+      <p class="footer-ai">
+        Built with AI assistance. Data from <a href="https://www.opendatani.gov.uk" target="_blank" rel="noopener">OpenDataNI</a> (OGL) and HSCIMS 2025.
+        Report issues: <a href="mailto:john@themoment.blog">john@themoment.blog</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="js/context.js"></script>
+</body>
+</html>
