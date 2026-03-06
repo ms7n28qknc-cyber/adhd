@@ -8,8 +8,6 @@
 
 /* ── Constants ──────────────────────────────────────────────────────────────── */
 
-const YEARS = ['2019', '2020', '2021', '2022', '2023'];
-
 const TRUSTS = ['Belfast', 'Northern', 'South Eastern', 'Southern', 'Western'];
 
 // Colours — kept consistent across charts
@@ -49,13 +47,6 @@ function fmt3(n) {
 function fmtRate(n, dp = 2) {
   if (n == null) return '—';
   return n.toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp });
-}
-
-// For rolling-period labels: "2019" → "2015–19"
-function rollingLabel(yr) {
-  const end   = +yr;
-  const start = end - 4;
-  return `${start}–${String(end).slice(2)}`;
 }
 
 /* ── Trust selector widget ──────────────────────────────────────────────────── */
@@ -165,17 +156,19 @@ function buildMaChart(ctx, hscims, adhdRates) {
 function renderMaTable(trustIdx, hscims, adhdRates) {
   const trust    = TRUSTS[trustIdx];
   const maData   = hscims.moodAnxiety;
+  const years    = maData.years;
   const trustAvg = maData.trusts[trust]?.average     ?? {};
   const trustDep = maData.trusts[trust]?.mostDeprived ?? {};
   const adhdLcg  = adhdRates.lcg?.[trust]             ?? {};
 
   const title = document.getElementById('ma-table-title');
-  if (title) title.textContent = `${trust} HSC Trust — Mood & Anxiety and ADHD, 2019–2023`;
+  const yr0 = years[0], yr1 = years[years.length - 1];
+  if (title) title.textContent = `${trust} HSC Trust — Mood & Anxiety and ADHD, ${yr0}–${yr1}`;
 
   const tbody = document.getElementById('ma-tbody');
   if (!tbody) return;
 
-  tbody.innerHTML = YEARS.map(yr => {
+  tbody.innerHTML = years.map(yr => {
     const avg  = trustAvg[yr]  ?? null;
     const dep  = trustDep[yr]  ?? null;
     const adhd = adhdLcg[yr]   ?? null;
@@ -183,7 +176,7 @@ function renderMaTable(trustIdx, hscims, adhdRates) {
     const gapCls = gap != null && gap > 0 ? 'ctx-gap-positive' : '';
     return `
       <tr>
-        <td><strong>${yr}</strong></td>
+        <td><strong>${maData.periodLabels[yr] || yr}</strong></td>
         <td class="col-num">${fmt1(avg)}</td>
         <td class="col-num">${fmt1(dep)}</td>
         <td class="col-num ${gapCls}">${gap != null ? '+' + fmt1(gap) : '—'}</td>
@@ -198,9 +191,9 @@ function renderMaTable(trustIdx, hscims, adhdRates) {
     <tr class="ctx-ni-row">
       <td colspan="5" class="ctx-ni-divider">NI average</td>
     </tr>` +
-    YEARS.map(yr => `
+    years.map(yr => `
       <tr class="ctx-ni-row">
-        <td><strong>${yr}</strong><span class="ctx-ni-tag"> NI</span></td>
+        <td><strong>${maData.periodLabels[yr] || yr}</strong><span class="ctx-ni-tag"> NI</span></td>
         <td class="col-num">${fmt1(niAvg?.[yr] ?? null)}</td>
         <td class="col-num">${fmt1(hscims.moodAnxiety.deprivationQuintiles?.mostDeprived?.[yr] ?? null)}</td>
         <td class="col-num ctx-gap-positive">
@@ -214,17 +207,18 @@ function renderMaTable(trustIdx, hscims, adhdRates) {
 
 /* ── Section 2 & 3: Multi-line chart helper ─────────────────────────────────── */
 
-function buildLineChart(canvasId, hscims, indicatorKey, adhdRates, isRolling = true) {
+function buildLineChart(canvasId, hscims, indicatorKey, adhdRates) {
   const ctx      = document.getElementById(canvasId)?.getContext('2d');
   if (!ctx) return null;
   const ind      = hscims[indicatorKey];
-  const labels   = isRolling ? YEARS.map(rollingLabel) : YEARS;
+  const years    = ind.years;
+  const labels   = years.map(yr => ind.periodLabels[yr] || yr);
 
   const datasets = [
     // NI average
     {
       label:           'NI average',
-      data:            YEARS.map(yr => ind.ni?.[yr] ?? null),
+      data:            years.map(yr => ind.ni?.[yr] ?? null),
       borderColor:     NI_COLOR,
       backgroundColor: 'transparent',
       borderWidth:     2.5,
@@ -237,7 +231,7 @@ function buildLineChart(canvasId, hscims, indicatorKey, adhdRates, isRolling = t
     // One line per Trust
     ...TRUSTS.map(trust => ({
       label:           trust,
-      data:            YEARS.map(yr => ind.trusts?.[trust]?.average?.[yr] ?? null),
+      data:            years.map(yr => ind.trusts?.[trust]?.average?.[yr] ?? null),
       borderColor:     TRUST_COLORS[trust],
       backgroundColor: 'transparent',
       borderWidth:     2,
@@ -249,7 +243,7 @@ function buildLineChart(canvasId, hscims, indicatorKey, adhdRates, isRolling = t
     // ADHD NI rate on secondary axis
     {
       label:           'ADHD NI rate (per 1,000 patients)',
-      data:            YEARS.map(yr => adhdRates.ni?.[yr] ?? null),
+      data:            years.map(yr => adhdRates.ni?.[yr] ?? null),
       borderColor:     ADHD_COLOR,
       backgroundColor: 'transparent',
       borderWidth:     2,
@@ -315,14 +309,15 @@ function buildLineChart(canvasId, hscims, indicatorKey, adhdRates, isRolling = t
 
 /* ── Section 2 & 3: Trust × Year table ─────────────────────────────────────── */
 
-function buildIndicatorTable(tableId, hscims, indicatorKey, adhdRates, isRolling = true) {
+function buildIndicatorTable(tableId, hscims, indicatorKey, adhdRates) {
   const table = document.getElementById(tableId);
   if (!table) return;
   const ind    = hscims[indicatorKey];
+  const years  = ind.years;
   const dp     = indicatorKey === 'moodAnxiety' ? 1 : 3;
 
   // Header row
-  const yearLabels = isRolling ? YEARS.map(rollingLabel) : YEARS;
+  const yearLabels = years.map(yr => ind.periodLabels[yr] || yr);
   table.querySelector('thead').innerHTML = `
     <tr>
       <th>Trust / Area</th>
@@ -331,19 +326,16 @@ function buildIndicatorTable(tableId, hscims, indicatorKey, adhdRates, isRolling
 
   // Body: NI + each Trust + deprivation row + ADHD divider + NI ADHD + Trust ADHD
   const rows = [
-    // NI average
-    { label: 'NI average', vals: YEARS.map(yr => ind.ni?.[yr] ?? null), cls: 'ctx-ni-avg-row' },
-    // Each Trust average
+    { label: 'NI average', vals: years.map(yr => ind.ni?.[yr] ?? null), cls: 'ctx-ni-avg-row' },
     ...TRUSTS.map(t => ({
       label: t,
-      vals:  YEARS.map(yr => ind.trusts?.[t]?.average?.[yr] ?? null),
+      vals:  years.map(yr => ind.trusts?.[t]?.average?.[yr] ?? null),
       color: TRUST_COLORS[t],
       cls:   '',
     })),
-    // NI most deprived
     {
       label: 'NI most deprived quintile',
-      vals:  YEARS.map(yr => ind.deprivationQuintiles?.mostDeprived?.[yr] ?? null),
+      vals:  years.map(yr => ind.deprivationQuintiles?.mostDeprived?.[yr] ?? null),
       cls:   'ctx-depr-row',
     },
   ];
@@ -361,21 +353,21 @@ function buildIndicatorTable(tableId, hscims, indicatorKey, adhdRates, isRolling
   // ADHD section — divider + NI + each Trust
   tbody += `
     <tr class="ctx-adhd-divider-row">
-      <td colspan="${YEARS.length + 1}">
+      <td colspan="${years.length + 1}">
         ADHD medication rate (items per 1,000 registered patients)
         — different denominator, see footnote
       </td>
     </tr>
     <tr class="ctx-adhd-data-row">
       <td>NI average</td>
-      ${YEARS.map(yr => `<td class="col-num ctx-adhd-col">${fmt1(adhdRates.ni?.[yr] ?? null)}</td>`).join('')}
+      ${years.map(yr => `<td class="col-num ctx-adhd-col">${fmt1(adhdRates.ni?.[yr] ?? null)}</td>`).join('')}
     </tr>` +
     TRUSTS.map(t => `
       <tr class="ctx-adhd-data-row">
         <td>
           <span class="drug-swatch" style="background:${TRUST_COLORS[t]}"></span>${t}
         </td>
-        ${YEARS.map(yr => `<td class="col-num ctx-adhd-col">${fmt1(adhdRates.lcg?.[t]?.[yr] ?? null)}</td>`).join('')}
+        ${years.map(yr => `<td class="col-num ctx-adhd-col">${fmt1(adhdRates.lcg?.[t]?.[yr] ?? null)}</td>`).join('')}
       </tr>`).join('');
 
   table.querySelector('tbody').innerHTML = tbody;
@@ -424,12 +416,12 @@ async function main() {
   }
 
   /* ── Section 2 ── */
-  buildLineChart('sh-line-chart', hscims, 'selfHarm', adhdRates, true);
-  buildIndicatorTable('sh-table', hscims, 'selfHarm', adhdRates, true);
+  buildLineChart('sh-line-chart', hscims, 'selfHarm', adhdRates);
+  buildIndicatorTable('sh-table', hscims, 'selfHarm', adhdRates);
 
   /* ── Section 3 ── */
-  buildLineChart('sui-line-chart', hscims, 'suicide', adhdRates, true);
-  buildIndicatorTable('sui-table', hscims, 'suicide', adhdRates, true);
+  buildLineChart('sui-line-chart', hscims, 'suicide', adhdRates);
+  buildIndicatorTable('sui-table', hscims, 'suicide', adhdRates);
 }
 
 main().catch(err => {

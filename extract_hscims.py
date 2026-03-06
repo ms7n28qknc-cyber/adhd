@@ -5,32 +5,29 @@ extract_hscims.py
 Reads the HSCIMS 2025 data-tables workbook and extracts mental health
 indicators for each HSC Trust and Northern Ireland overall.
 
+The workbook structure (per sheet per indicator):
+  Row N:   Indicator name (string)
+  Row N+1: Unit label | period_1 | period_2 | ... | period_5 | 'Trend Analysis'
+  Row N+2: 'Northern Ireland' | v1 | v2 | v3 | v4 | v5 | ...
+  Row N+3: [Trust/Deprivation rows]
+
+NI sheet rows:
+  'Northern Ireland', '1 (Most Deprived)', '5 (Least Deprived)'
+
+Trust sheet rows (e.g., Belfast HSCT):
+  'Northern Ireland', 'Belfast Trust', 'Belfast Trust Deprived'
+
 Usage
 -----
-    # First run to inspect sheet structure:
-    python extract_hscims.py --explore
-
-    # Normal extraction (writes site/data/health-context.json):
-    python extract_hscims.py
-
-    # Override file paths:
+    python extract_hscims.py                    # auto-detect file, write to site/data/
+    python extract_hscims.py --explore          # dump sheet structure
     python extract_hscims.py --xlsx /path/to/file.xlsx --out /path/to/out.json
-
-Output JSON structure
----------------------
-{
-  "moodAnxiety":    { "ni": {...}, "trusts": {...}, "deprivationQuintiles": {...} },
-  "selfHarm":       { same structure, values per 1,000 (divided by 100) },
-  "suicide":        { same structure, values per 1,000 (divided by 100) },
-  "drugAdmissions": { same structure, if present },
-  "alcoholDeaths":  { same structure, if present }
-}
 """
 
 import sys
 import os
-import json
 import re
+import json
 import openpyxl
 
 # ---------------------------------------------------------------------------
@@ -38,70 +35,53 @@ import openpyxl
 # ---------------------------------------------------------------------------
 
 XLSX_SEARCH_PATHS = [
+    "site/data/hscims-report-2025-data-tables-by-area.xlsx",
     "data/hscims-report-2025-data-tables-by-area.xlsx",
     "/data/hscims-report-2025-data-tables-by-area.xlsx",
 ]
 
 OUT_DEFAULT = "site/data/health-context.json"
 
-# Sheet names to try (exact match, then case-insensitive)
-SHEET_NI     = ["NI", "Northern Ireland"]
+SHEET_NI = "Northern Ireland"
 SHEET_TRUSTS = {
-    "Belfast":       ["Belfast HSCT", "Belfast"],
-    "Northern":      ["Northern HSCT", "Northern"],
-    "South Eastern": ["South Eastern HSCT", "South Eastern", "South Eastern  HSCT"],
-    "Southern":      ["Southern HSCT", "Southern"],
-    "Western":       ["Western HSCT", "Western"],
+    "Belfast":       "Belfast HSCT",
+    "Northern":      "Northern HSCT",
+    "South Eastern": "South Eastern HSCT",
+    "Southern":      "Southern HSCT",
+    "Western":       "Western HSCT",
 }
 
-# Years to extract
-TARGET_YEARS = [2019, 2020, 2021, 2022, 2023]
-
-# Indicator keyword → output key, scale factor (multiply raw value by this)
+# Indicator keyword → output key, scale (multiply by to convert to per 1,000)
 INDICATORS = {
     "moodAnxiety": {
-        "keywords": ["mood", "anxiety"],   # all keywords must appear (case-insensitive)
-        "scale": 1.0,                      # already per 1,000
-        "required": True,
+        "keyword":   "Mood & Anxiety",
+        "scale":     1.0,       # already per 1,000 population
+        "required":  True,
     },
     "selfHarm": {
-        "keywords": ["self-harm", "self harm"],  # any one match is enough
-        "scale": 1 / 100,                        # per 100,000 → per 1,000
-        "required": True,
+        "keyword":   "Self-Harm",
+        "scale":     1 / 100,   # per 100,000 → per 1,000
+        "required":  True,
     },
     "suicide": {
-        "keywords": ["suicide"],
-        "scale": 1 / 100,
-        "required": True,
+        "keyword":   "Suicide",
+        "scale":     1 / 100,
+        "required":  True,
     },
     "drugAdmissions": {
-        "keywords": ["drug"],
-        "scale": 1 / 100,
-        "required": False,
+        "keyword":   "Drug Related Causes",
+        "scale":     1 / 100,
+        "required":  False,
     },
     "alcoholDeaths": {
-        "keywords": ["alcohol"],
-        "scale": 1 / 100,
-        "required": False,
+        "keyword":   "Alcohol Specific",
+        "scale":     1 / 100,
+        "required":  False,
     },
 }
 
-# Column roles — in the typical HSCIMS layout each indicator table has:
-#   col 0: year label
-#   col 1: area total (NI overall or Trust total)
-#   col 2: Quintile 1 / Most Deprived
-#   col 3: Quintile 2
-#   col 4: Quintile 3
-#   col 5: Quintile 4
-#   col 6: Quintile 5 / Least Deprived
-# Adjust these if --explore reveals a different structure.
-COL_YEAR     = 0
-COL_AREA_AVG = 1
-COL_Q1_DEPR  = 2   # most deprived
-COL_Q5_LEAST = 6   # least deprived
-
 # ---------------------------------------------------------------------------
-# Workbook helpers
+# Helpers
 # ---------------------------------------------------------------------------
 
 def find_xlsx(override=None):
@@ -113,42 +93,61 @@ def find_xlsx(override=None):
         if os.path.isfile(p):
             return p
     raise FileNotFoundError(
-        "Excel file not found. Expected one of:\n  " +
-        "\n  ".join(XLSX_SEARCH_PATHS) +
-        "\nProvide the path with --xlsx /path/to/file.xlsx"
+        "Excel file not found. Tried:\n  " + "\n  ".join(XLSX_SEARCH_PATHS)
     )
 
 
-def find_sheet(wb, names):
-    """Return first matching sheet (exact then case-insensitive)."""
-    sheets_lower = {s.lower(): s for s in wb.sheetnames}
-    for name in names:
-        if name in wb.sheetnames:
-            return wb[name]
-        if name.lower() in sheets_lower:
-            return wb[sheets_lower[name.lower()]]
-    return None
+def period_end_year(label):
+    """
+    Extract the end year from a period label as a string.
+
+    Examples:
+      2019              → '2019'  (int or str integer)
+      '2017-19'         → '2019'
+      '2019-23'         → '2023'
+      '2015/16-2019/20' → '2020'
+      '2019/20-2023/24' → '2024'
+    """
+    if isinstance(label, (int, float)):
+        return str(int(label))
+    s = str(label).strip()
+    # Financial year range: '2019/20-2023/24'
+    m = re.search(r'(\d{4})/(\d{2})\s*$', s)
+    if m:
+        return str(int(m.group(1)) + 1)
+    # Calendar year range ending in 2-digit year: '2017-19', '2019-23'
+    m = re.search(r'(\d{4})-(\d{2})\s*$', s)
+    if m:
+        century = m.group(1)[:2]
+        return century + m.group(2)
+    # Plain 4-digit year: '2023'
+    m = re.match(r'^(\d{4})$', s)
+    if m:
+        return m.group(1)
+    return s
 
 
-def cell_float(val):
-    """Convert a cell value to float, or None."""
-    if val is None:
+def format_period_label(label):
+    """Return a clean display label, replacing '-' with '–' (en-dash)."""
+    if isinstance(label, (int, float)):
+        return str(int(label))
+    return str(label).strip().replace('-', '–')
+
+
+def cell_float(v):
+    if v is None:
         return None
-    if isinstance(val, (int, float)):
-        return float(val)
-    if isinstance(val, str):
-        cleaned = val.replace(",", "").strip()
-        try:
-            return float(cleaned)
-        except ValueError:
-            return None
-    return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    try:
+        return float(str(v).replace(',', '').strip())
+    except (ValueError, TypeError):
+        return None
 
 
-def row_to_list(row, length=12):
-    """Convert a worksheet row (tuple or list) to a padded list."""
+def row_vals(row, pad_to=8):
     lst = list(row)
-    while len(lst) < length:
+    while len(lst) < pad_to:
         lst.append(None)
     return lst
 
@@ -157,200 +156,199 @@ def row_to_list(row, length=12):
 # Sheet exploration
 # ---------------------------------------------------------------------------
 
-def explore_sheet(ws, max_rows=60):
-    print(f"\n{'='*60}")
-    print(f"Sheet: {ws.title}  (dims: {ws.dimensions})")
-    print(f"{'='*60}")
+def explore_sheet(ws, max_rows=80):
+    print(f"\n{'='*60}\nSheet: {ws.title}\n{'='*60}")
     for i, row in enumerate(ws.iter_rows(max_row=max_rows, values_only=True), 1):
         non_empty = [(j, v) for j, v in enumerate(row) if v is not None]
         if non_empty:
-            vals = "  |  ".join(f"[{j}] {repr(v)}" for j, v in non_empty[:8])
-            print(f"  row {i:3d}: {vals}")
+            vals = '  |  '.join(f'[{j}] {repr(v)[:50]}' for j, v in non_empty[:8])
+            print(f'  row {i:3d}: {vals}')
 
 
 def explore(wb):
-    print("Sheets:", wb.sheetnames)
-    sheets_to_explore = [find_sheet(wb, SHEET_NI)] + [
-        find_sheet(wb, names) for names in SHEET_TRUSTS.values()
-    ]
-    for ws in sheets_to_explore:
-        if ws is not None:
-            explore_sheet(ws)
+    for sheet_name in [SHEET_NI] + list(SHEET_TRUSTS.values()):
+        if sheet_name in wb.sheetnames:
+            explore_sheet(wb[sheet_name])
         else:
-            print("\n[Sheet not found]")
-
+            print(f"\n[Sheet not found: {sheet_name}]")
 
 # ---------------------------------------------------------------------------
-# Indicator extraction
+# Core extraction
 # ---------------------------------------------------------------------------
 
-def keyword_matches(cell_text, keywords):
-    """Return True if cell_text contains any of the keyword phrases."""
-    if not isinstance(cell_text, str):
-        return False
-    lower = cell_text.lower()
-    # For mood/anxiety we require both words; for others, any one match
-    if len(keywords) > 1 and all(k in lower for k in keywords if "&" not in k):
-        return True
-    return any(k.lower() in lower for k in keywords)
-
-
-def find_indicator_row(ws, keywords, max_rows=300):
-    """Return 1-based row index of first cell matching any keyword combo."""
-    for i, row in enumerate(ws.iter_rows(max_row=max_rows, values_only=True), 1):
-        for val in row:
-            if keyword_matches(val, keywords):
-                return i
+def find_indicator_row(rows, keyword, max_rows=None):
+    """Return 0-based row index of first row whose col-0 contains keyword."""
+    kw_lower = keyword.lower()
+    limit = max_rows or len(rows)
+    for i, row in enumerate(rows[:limit]):
+        v = row[0] if row else None
+        if isinstance(v, str) and kw_lower in v.lower():
+            return i
     return None
 
 
-def extract_year_block(ws, start_row, scale, max_scan=50):
+def extract_ni_block(rows, start_idx, scale):
     """
-    Scan rows below start_row for year-labelled data rows.
-    Returns dict: { year_str: {'area': float, 'q1': float, 'q5': float} }
+    Extract data from NI sheet indicator block.
+    Returns:
+      ni_vals          : {year_key: scaled_float}
+      q1_vals          : {year_key: scaled_float}   (most deprived)
+      q5_vals          : {year_key: scaled_float}   (least deprived)
+      period_labels    : {year_key: display_label}
+      year_keys        : [ordered list of year_key strings]
     """
-    result = {}
-    rows = list(ws.iter_rows(
-        min_row=start_row, max_row=start_row + max_scan, values_only=True
-    ))
+    # Row start_idx = indicator name; start_idx+1 = column headers
+    header_row = rows[start_idx + 1] if start_idx + 1 < len(rows) else []
+    periods = [v for v in header_row if v is not None and str(v) != 'Trend Analysis'][1:]
+    # periods[0..4] correspond to columns 1..5
 
-    # Try to auto-detect column header row (row with "quintile" or "deprived" text)
-    area_col = COL_AREA_AVG
-    q1_col   = COL_Q1_DEPR
-    q5_col   = COL_Q5_LEAST
+    year_keys     = [period_end_year(p) for p in periods]
+    period_labels = {yk: format_period_label(p) for yk, p in zip(year_keys, periods)}
 
-    for row in rows[:10]:
-        vals = [str(v).lower() if v else "" for v in row]
-        if any("quintile" in v or "deprived" in v or "q1" in v for v in vals):
-            # Found header row — re-map columns
-            for j, v in enumerate(vals):
-                if "1" in v and ("deprived" in v or "quintile" in v):
-                    q1_col = j
-                elif "5" in v and ("least" in v or "quintile" in v):
-                    q5_col = j
-                elif any(word in v for word in ["total", "overall", "ni", "trust", "area", "rate"]):
-                    if j > 0:
-                        area_col = j
-            break
+    ni_vals = {}
+    q1_vals = {}
+    q5_vals = {}
 
-    # Now scan for year rows
-    for row in rows:
-        padded = row_to_list(row)
-        first = next((padded[j] for j in range(4) if padded[j] is not None), None)
+    # Scan rows below header for the data rows we need
+    for row in rows[start_idx + 2: start_idx + 8]:
+        label = row[0] if row else None
+        if not isinstance(label, str):
+            continue
+        label_l = label.lower()
+        vals = [cell_float(row[j]) for j in range(1, 6)]
 
-        year = None
-        if isinstance(first, int) and first in TARGET_YEARS:
-            year = first
-        elif isinstance(first, str):
-            m = re.search(r'\b(201[5-9]|202[0-9])\b', first)
-            if m:
-                year = int(m.group(1))
+        def scaled(v):
+            return round(v * scale, 4) if v is not None else None
 
-        if year and year in TARGET_YEARS:
-            area_val = cell_float(padded[area_col])
-            q1_val   = cell_float(padded[q1_col])
-            q5_val   = cell_float(padded[q5_col])
+        if label_l == 'northern ireland':
+            ni_vals = {yk: scaled(v) for yk, v in zip(year_keys, vals)}
+        elif '1 (most deprived)' in label_l:
+            q1_vals = {yk: scaled(v) for yk, v in zip(year_keys, vals)}
+        elif '5 (least deprived)' in label_l:
+            q5_vals = {yk: scaled(v) for yk, v in zip(year_keys, vals)}
 
-            def scale_val(v):
-                return round(v * scale, 4) if v is not None else None
-
-            result[str(year)] = {
-                "area":    scale_val(area_val),
-                "q1Deprived":  scale_val(q1_val),
-                "q5Least":     scale_val(q5_val),
-            }
-
-    return result
+    return ni_vals, q1_vals, q5_vals, period_labels, year_keys
 
 
-def extract_indicator(ws, ind_key, ind_cfg):
-    """Extract one indicator from a sheet. Returns year-keyed dict or None."""
-    row_idx = find_indicator_row(ws, ind_cfg["keywords"])
-    if row_idx is None:
-        return None
-    return extract_year_block(ws, row_idx + 1, ind_cfg["scale"])
+def extract_trust_block(rows, start_idx, scale, trust_name):
+    """
+    Extract Trust average and Trust Deprived from a Trust sheet indicator block.
+    Returns:
+      avg_vals         : {year_key: scaled_float}
+      deprived_vals    : {year_key: scaled_float}
+      year_keys        : [ordered list]
+    """
+    header_row = rows[start_idx + 1] if start_idx + 1 < len(rows) else []
+    periods  = [v for v in header_row if v is not None and str(v) != 'Trend Analysis'][1:]
+    year_keys = [period_end_year(p) for p in periods]
 
+    avg_vals     = {}
+    deprived_vals = {}
+    # Trust rows are labeled "[Trust Name] Trust" and "[Trust Name] Trust Deprived"
+    # e.g. 'Belfast Trust', 'Belfast Trust Deprived'
+    # Match by looking for trust_name in the row label (case-insensitive)
+    tn_lower = trust_name.lower()
+
+    for row in rows[start_idx + 2: start_idx + 10]:
+        label = row[0] if row else None
+        if not isinstance(label, str):
+            continue
+        label_l = label.lower()
+        if tn_lower not in label_l:
+            continue
+        vals = [cell_float(row[j]) for j in range(1, 6)]
+
+        def scaled(v):
+            return round(v * scale, 4) if v is not None else None
+
+        if label_l == f"{tn_lower} trust deprived":
+            deprived_vals = {yk: scaled(v) for yk, v in zip(year_keys, vals)}
+        elif label_l == f"{tn_lower} trust":
+            avg_vals = {yk: scaled(v) for yk, v in zip(year_keys, vals)}
+
+    return avg_vals, deprived_vals, year_keys
 
 # ---------------------------------------------------------------------------
-# Main extraction logic
+# Main extraction
 # ---------------------------------------------------------------------------
 
 def extract_all(wb):
     output = {}
 
-    ni_sheet = find_sheet(wb, SHEET_NI)
+    # Load sheets
+    ni_sheet = wb[SHEET_NI] if SHEET_NI in wb.sheetnames else None
     if ni_sheet is None:
-        print(f"WARNING: NI sheet not found. Tried: {SHEET_NI}", file=sys.stderr)
+        print(f"ERROR: '{SHEET_NI}' sheet not found.", file=sys.stderr)
+        return {}
+    ni_rows_raw = list(ni_sheet.iter_rows(values_only=True))
+    ni_rows     = [row_vals(r) for r in ni_rows_raw]
 
-    trust_sheets = {}
-    for trust_name, sheet_names in SHEET_TRUSTS.items():
-        ws = find_sheet(wb, sheet_names)
-        if ws is None:
-            print(f"WARNING: Sheet for '{trust_name}' not found. Tried: {sheet_names}", file=sys.stderr)
-        trust_sheets[trust_name] = ws
+    trust_rows = {}
+    for trust_name, sheet_name in SHEET_TRUSTS.items():
+        if sheet_name not in wb.sheetnames:
+            print(f"WARNING: Sheet '{sheet_name}' not found.", file=sys.stderr)
+            continue
+        ws = wb[sheet_name]
+        trust_rows[trust_name] = [row_vals(r) for r in ws.iter_rows(values_only=True)]
 
     for ind_key, ind_cfg in INDICATORS.items():
-        print(f"\nExtracting: {ind_key}")
+        keyword = ind_cfg["keyword"]
+        scale   = ind_cfg["scale"]
+        print(f"\nExtracting: {ind_key}  (keyword: '{keyword}')")
 
-        # NI overall
-        ni_data = {}
-        ni_q1   = {}
-        ni_q5   = {}
-        if ni_sheet:
-            block = extract_indicator(ni_sheet, ind_key, ind_cfg)
-            if block:
-                for yr, vals in block.items():
-                    ni_data[yr] = vals["area"]
-                    ni_q1[yr]   = vals["q1Deprived"]
-                    ni_q5[yr]   = vals["q5Least"]
-                print(f"  NI: found {len(block)} years")
-            else:
-                kw = ind_cfg["keywords"]
-                print(f"  NI: indicator not found (keywords: {kw})")
-                if ind_cfg["required"]:
-                    print(f"  HINT: Run with --explore to inspect sheet layout")
-
-        # Trust data
-        trusts_out = {}
-        for trust_name, ws in trust_sheets.items():
-            if ws is None:
-                continue
-            block = extract_indicator(ws, ind_key, ind_cfg)
-            if block:
-                trusts_out[trust_name] = {
-                    "average":     {yr: v["area"]       for yr, v in block.items()},
-                    "mostDeprived":{yr: v["q1Deprived"] for yr, v in block.items()},
-                }
-                print(f"  {trust_name}: found {len(block)} years")
-            else:
-                print(f"  {trust_name}: indicator not found")
-
-        if not ni_data and not trusts_out:
+        # ── NI sheet ──
+        ni_idx = find_indicator_row(ni_rows, keyword)
+        if ni_idx is None:
+            msg = f"  Indicator not found in NI sheet"
+            print(msg)
             if ind_cfg["required"]:
-                print(f"  ERROR: Could not extract {ind_key} from any sheet")
+                print(f"  Run with --explore to inspect the sheet structure.")
             continue
 
+        ni_vals, q1_vals, q5_vals, period_labels, year_keys = \
+            extract_ni_block(ni_rows, ni_idx, scale)
+        print(f"  NI sheet: row {ni_idx+1}, {len(ni_vals)} values, years: {year_keys}")
+
+        # ── Trust sheets ──
+        trusts_out = {}
+        for trust_name, rows in trust_rows.items():
+            t_idx = find_indicator_row(rows, keyword)
+            if t_idx is None:
+                print(f"  {trust_name}: not found in sheet")
+                continue
+            avg_vals, deprived_vals, t_year_keys = \
+                extract_trust_block(rows, t_idx, scale, trust_name)
+            if avg_vals:
+                trusts_out[trust_name] = {
+                    "average":      avg_vals,
+                    "mostDeprived": deprived_vals,
+                }
+                print(f"  {trust_name}: {len(avg_vals)} values")
+            else:
+                print(f"  {trust_name}: data rows not matched (check trust row labels)")
+
         output[ind_key] = {
-            "ni": ni_data,
-            "trusts": trusts_out,
+            "years":        year_keys,
+            "periodLabels": period_labels,
+            "ni":           ni_vals,
+            "trusts":       trusts_out,
             "deprivationQuintiles": {
-                "mostDeprived": ni_q1,
-                "leastDeprived": ni_q5,
+                "mostDeprived":  q1_vals,
+                "leastDeprived": q5_vals,
             },
         }
 
     return output
-
 
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 
 def main():
-    args = sys.argv[1:]
+    args      = sys.argv[1:]
     explore_mode = "--explore" in args
-    xlsx_path    = None
-    out_path     = OUT_DEFAULT
+    xlsx_path = None
+    out_path  = OUT_DEFAULT
 
     i = 0
     while i < len(args):
@@ -368,25 +366,26 @@ def main():
         sys.exit(1)
 
     print(f"Loading: {xlsx_file}")
-    wb = openpyxl.load_workbook(xlsx_file, read_only=True, data_only=True)
-    print(f"Sheets: {wb.sheetnames}")
+    wb = openpyxl.load_workbook(xlsx_file, data_only=True)
+    print(f"Sheets:  {wb.sheetnames}")
 
     if explore_mode:
         explore(wb)
         return
 
     data = extract_all(wb)
-
     if not data:
-        print("\nERROR: No data extracted. Run with --explore to inspect the workbook layout.")
+        print("\nERROR: Nothing extracted. Run with --explore to inspect structure.")
         sys.exit(1)
 
-    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    out_dir = os.path.dirname(out_path)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as fh:
         json.dump(data, fh, separators=(",", ":"), indent=2)
 
     print(f"\nWritten: {out_path}")
-    print(f"  indicators: {list(data.keys())}")
+    print(f"Indicators: {list(data.keys())}")
 
 
 if __name__ == "__main__":
