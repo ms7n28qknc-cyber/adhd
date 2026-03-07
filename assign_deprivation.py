@@ -187,14 +187,20 @@ def main():
         reg = p.get('registered_patients', {})
 
         for yr in years:
-            items  = sum(rx[m].get('total_items', 0) for m in rx if m.startswith(yr))
+            months_with_rx = [m for m in rx if m.startswith(yr)]
+            if not months_with_rx:
+                continue
+            total_items   = sum(rx[m].get('total_items', 0) for m in months_with_rx)
+            monthly_items = total_items / len(months_with_rx)   # avg items per month
+
             pts_ms = [v for k, v in reg.items() if k.startswith(yr) and v is not None and v > 0]
             if not pts_ms:
                 continue
             avg_pt = sum(pts_ms) / len(pts_ms)
-            acc[q][yr][0] += items
+
+            acc[q][yr][0] += monthly_items
             acc[q][yr][1] += avg_pt
-            ni[yr][0]     += items
+            ni[yr][0]     += monthly_items
             ni[yr][1]     += avg_pt
 
     by_quintile = {}
