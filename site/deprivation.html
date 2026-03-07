@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ADHD prescribing rates by area deprivation in Northern Ireland, 2015–2025. Analysis by NIMDM 2017 quintile.">
+  <title>Deprivation Analysis — ADHD Prescribing NI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="site-brand">
+        <span class="brand-pill">NI</span>
+        ADHD Prescribing
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Site navigation">
+        <a href="overview.html" class="nav-link">Overview</a>
+        <a href="deprivation.html" class="nav-link nav-link--active" aria-current="page">Deprivation</a>
+        <a href="practices.html" class="nav-link">All practices</a>
+        <a href="rankings.html" class="nav-link">Rankings</a>
+        <a href="https://themoment.blog" target="_blank" rel="noopener" class="nav-link">themoment.blog</a>
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="site-nav">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page banner -->
+  <div class="browse-banner">
+    <div class="container">
+      <div class="browse-banner-inner">
+        <div>
+          <h1 class="browse-title">ADHD Prescribing and Deprivation</h1>
+          <p class="browse-subtitle">Prescribing rates by NIMDM 2017 deprivation quintile — Northern Ireland, 2015–2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="container overview-page" id="deprivation-section" class="depr-loading">
+
+      <!-- Introduction -->
+      <div class="section-hd" style="margin-bottom:1.25rem">
+        <h2 class="section-title">What the data shows</h2>
+      </div>
+
+      <p class="depr-intro">Each GP practice in Northern Ireland has been assigned to one of five deprivation quintiles based on the <a href="https://www.nisra.gov.uk/statistics/deprivation/northern-ireland-multiple-deprivation-measure-2017-nimdm2017" target="_blank" rel="noopener">NI Multiple Deprivation Measure 2017 (NIMDM 2017)</a> — NISRA's official ranking of 890 small geographic areas (Super Output Areas) from most to least deprived. Quintile 1 contains practices in the most deprived 20% of areas; Quintile 5 contains those in the least deprived 20%.</p>
+
+      <p class="depr-intro">In 2015, prescribing rates were broadly similar across all quintiles — Quintile 1 (most deprived) actually recorded the highest rate. Since around 2020–21, that pattern reversed. Rates in the least deprived areas have grown at markedly faster pace, and Quintile 5 now records the highest prescribing rate in Northern Ireland. The gap has continued to widen each year.</p>
+
+      <p class="depr-intro">Multiple factors may contribute to this shift, including differential access to NHS and private psychiatric assessment pathways, variation in help-seeking behaviour, socioeconomic influences on diagnosis rates, and changes in GP shared-care arrangements. The data alone cannot distinguish between these explanations — it records what is prescribed, not why.</p>
+
+      <!-- Key finding -->
+      <p class="depr-key-finding" id="depr-key-finding"></p>
+
+      <!-- Side-by-side charts -->
+      <div class="depr-charts-row">
+        <div class="chart-card">
+          <div class="chart-card-hd">
+            <div class="chart-title">Rate by Deprivation Quintile Over Time</div>
+            <div class="chart-desc">Monthly ADHD items per 1,000 patients — 2015–2025</div>
+          </div>
+          <div class="chart-wrap depr-chart-wrap">
+            <canvas id="depr-line-chart" aria-label="Line chart of ADHD prescribing rate by deprivation quintile over time"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-hd">
+            <div class="chart-title">Rate by Quintile — <span id="depr-bar-year">Latest Year</span></div>
+            <div class="chart-desc">Average monthly items per 1,000 patients</div>
+          </div>
+          <div class="chart-wrap depr-chart-wrap">
+            <canvas id="depr-bar-chart" aria-label="Bar chart of ADHD prescribing rate by deprivation quintile"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table: years × quintiles -->
+      <div class="table-card" style="margin-bottom:1.25rem">
+        <div class="chart-card-hd">
+          <div class="chart-title">Rates by Quintile and Year</div>
+          <div class="chart-desc">Average monthly items per 1,000 registered patients</div>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th class="col-num" style="color:#dc2626">Q1 Most Deprived</th>
+                <th class="col-num" style="color:#f97316">Q2</th>
+                <th class="col-num" style="color:#d97706">Q3</th>
+                <th class="col-num" style="color:#16a34a">Q4</th>
+                <th class="col-num" style="color:#2563eb">Q5 Least Deprived</th>
+                <th class="col-num">NI Average</th>
+              </tr>
+            </thead>
+            <tbody id="depr-table-body">
+              <tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:2rem">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Methodology and caveats -->
+      <div class="section-hd" style="margin-bottom:1rem;margin-top:2rem">
+        <h2 class="section-title">Methodology and caveats</h2>
+      </div>
+
+      <div class="depr-context">
+        <p><strong>Deprivation measure.</strong> Practices are matched to deprivation quintiles using the <a href="https://www.nisra.gov.uk/statistics/deprivation/northern-ireland-multiple-deprivation-measure-2017-nimdm2017" target="_blank" rel="noopener">NIMDM 2017</a>, which ranks 890 Super Output Areas (SOAs) across Northern Ireland from 1 (most deprived) to 890 (least deprived). Each practice's postcode is mapped to an SOA using the <a href="https://www.nisra.gov.uk/support/geography/northern-ireland-postcode-lookup" target="_blank" rel="noopener">NISRA Postcode Lookup (February 2026)</a>. Quintiles are assigned based on SOA rank: Q1 covers ranks 1–178 (most deprived 20%), Q5 covers ranks 713–890 (least deprived 20%).</p>
+        <p><strong>Area vs. patient deprivation.</strong> The deprivation quintile assigned to a practice describes the area in which that practice is located — it is not a direct measure of the deprivation of individual patients on its list. Patients may be registered with a practice outside their immediate residential area, for example near a place of work or study. In practice, the majority of patients tend to live close to their registered GP, but this is not universal.</p>
+        <p><strong>Temporal accuracy.</strong> NIMDM 2017 is a single point-in-time measure. The rankings it produces reflect area conditions as of 2017. A 2020 update (NIMDM 2020) also exists, though the two measures are broadly consistent for most areas. Using a fixed 2017 baseline across a 10-year dataset introduces some imprecision, but is a standard approach in longitudinal population health research.</p>
+        <p><strong>Prescribing rates.</strong> Rates are calculated as average monthly prescription items per 1,000 registered patients, using GP Practice List Size data from BSO. Rates represent the average across all practices within each quintile, weighted by patient list size. A small number of practices could not be matched to a deprivation quintile; these are excluded from quintile averages.</p>
+        <p id="depr-practice-counts" class="depr-practice-counts"></p>
+      </div>
+
+      <p class="depr-caveat" style="margin-top:1rem">These figures record prescribing activity — not clinical need, diagnosis rates, or quality of care. Higher or lower prescribing rates in any quintile may reflect a wide range of factors including referral pathway access, demographic composition, assessment backlogs, and shared-care arrangements. They should not be used to make judgements about the quality of care provided by any individual practice or area.</p>
+
+    </div><!-- /container -->
+  </main>
+
+  <!-- ── The Wider Picture ──────────────────────────────────────────────── -->
+  <section class="wider-picture" aria-labelledby="wider-picture-heading">
+    <div class="container wider-picture-inner">
+      <h2 class="wider-picture-title" id="wider-picture-heading">ADHD Prescribing in Context</h2>
+      <div class="wider-picture-body">
+        <p>ADHD medication prescribing in Northern Ireland sits within a wider landscape of mental health need that is strongly linked to deprivation. Data from the Department of Health's Health Inequalities Annual Report 2025 shows that mood and anxiety prescription rates in the most deprived areas of Northern Ireland are around two-thirds higher than in the least deprived areas — a gap that has remained persistent over time.</p>
+        <p>Self-harm admissions and suicide rates follow a similar pattern, with the most deprived communities consistently experiencing the highest rates. These are the same communities where demand for all mental health services, including ADHD diagnosis and treatment, is greatest.</p>
+        <p>Research internationally has found that around 25% of prisoners meet diagnostic criteria for ADHD — a five to tenfold increase compared to the general population (Young et al, Psychological Medicine, 2015). Untreated ADHD is associated with higher rates of substance misuse, self-harm, and contact with the criminal justice system. Early diagnosis and appropriate treatment in primary care is one of the most effective interventions available.</p>
+        <p>The prescribing data on this site cannot tell us whether ADHD is being over- or under-diagnosed in any area. What it can show is where medication is being prescribed, how that has changed over a decade, and how individual practices compare to their peers.</p>
+      </div>
+      <p class="wider-picture-sources">Sources: NI Health and Social Care Inequalities Monitoring System, Annual Report 2025, Department of Health. GP Prescribing Data and GP Practice List Sizes, Business Services Organisation, OpenDataNI (Open Government Licence). Young S et al, A meta-analysis of the prevalence of ADHD in incarcerated populations, Psychological Medicine, 2015.</p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-primary">
+        <p class="footer-source">
+          Data: <strong>GP Prescribing Data and GP Practice List Sizes</strong> from
+          <a href="https://www.opendatani.gov.uk" target="_blank" rel="noopener">OpenDataNI</a>
+          (Business Services Organisation)
+        </p>
+        <p class="footer-licence">
+          Licensed under the
+          <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">UK Open Government Licence (OGL) v3.0</a>
+        </p>
+      </div>
+      <div class="footer-secondary">
+        <p>Analysis by <a href="https://themoment.blog" target="_blank" rel="noopener">themoment.blog</a></p>
+      </div>
+      <p class="footer-ai">
+        Built with AI assistance. Data from <a href="https://www.opendatani.gov.uk" target="_blank" rel="noopener">OpenDataNI</a> (OGL).
+        Report issues: <a href="mailto:john@themoment.blog">john@themoment.blog</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/deprivation.js"></script>
+</body>
+</html>

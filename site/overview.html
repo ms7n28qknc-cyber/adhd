@@ -20,6 +20,7 @@
       </a>
       <nav class="site-nav" id="site-nav" aria-label="Site navigation">
         <a href="overview.html" class="nav-link nav-link--active" aria-current="page">Overview</a>
+        <a href="deprivation.html" class="nav-link">Deprivation</a>
         <a href="practices.html" class="nav-link">All practices</a>
         <a href="rankings.html" class="nav-link">Rankings</a>
         <a href="https://themoment.blog" target="_blank" rel="noopener" class="nav-link">themoment.blog</a>
@@ -129,73 +130,30 @@
         </div>
       </div>
 
-      <!-- 6. Deprivation analysis -->
+      <!-- 6. Deprivation analysis (summary — full analysis at deprivation.html) -->
       <div id="deprivation-section" class="depr-loading">
         <div class="section-hd" style="margin-bottom:1.25rem">
           <h2 class="section-title">ADHD Prescribing and Deprivation</h2>
           <p class="section-desc" style="margin-top:0.25rem;font-size:0.875rem;color:var(--text-2)">Prescribing rates by NIMDM 2017 deprivation quintile — Northern Ireland, 2015–2025</p>
         </div>
 
-        <!-- Introductory explanation -->
-        <p class="depr-intro">Each GP practice has been assigned to one of five deprivation quintiles based on the <a href="https://www.nisra.gov.uk/statistics/deprivation/northern-ireland-multiple-deprivation-measure-2017-nimdm2017" target="_blank" rel="noopener">NIMDM 2017</a> — Northern Ireland's official measure of area deprivation, covering 890 small geographic areas (Super Output Areas). Quintile 1 contains practices in the most deprived areas; Quintile 5 contains those in the least deprived. In 2015, prescribing rates were broadly similar across all quintiles. Since around 2020–21, rates in less deprived areas have grown at a markedly faster pace. Multiple factors may contribute to this pattern, including differential access to NHS and private assessment pathways, variation in help-seeking behaviour, and socioeconomic influences on diagnosis and treatment rates. Deprivation is measured at the area level and does not necessarily reflect the circumstances of individual patients at each practice.</p>
+        <p class="depr-intro">Each GP practice has been assigned to one of five deprivation quintiles based on the <a href="https://www.nisra.gov.uk/statistics/deprivation/northern-ireland-multiple-deprivation-measure-2017-nimdm2017" target="_blank" rel="noopener">NIMDM 2017</a>. Quintile 1 is the most deprived 20% of areas; Quintile 5 is the least deprived. In 2015 rates were broadly similar across quintiles. Since around 2020–21, rates in less deprived areas have grown significantly faster. Deprivation is measured at the area level and does not necessarily reflect the circumstances of individual patients, who may be registered with a practice outside their immediate residential area.</p>
 
         <!-- Key finding -->
         <p class="depr-key-finding" id="depr-key-finding"></p>
 
-        <!-- Side-by-side charts -->
-        <div class="depr-charts-row">
-          <div class="chart-card">
-            <div class="chart-card-hd">
-              <div class="chart-title">Rate by Deprivation Quintile Over Time</div>
-              <div class="chart-desc">Monthly ADHD items per 1,000 patients — 2015–2025</div>
-            </div>
-            <div class="chart-wrap depr-chart-wrap">
-              <canvas id="depr-line-chart" aria-label="Line chart of ADHD prescribing rate by deprivation quintile over time"></canvas>
-            </div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-card-hd">
-              <div class="chart-title">Rate by Quintile — <span id="depr-bar-year">Latest Year</span></div>
-              <div class="chart-desc">Average monthly items per 1,000 patients</div>
-            </div>
-            <div class="chart-wrap depr-chart-wrap">
-              <canvas id="depr-bar-chart" aria-label="Bar chart of ADHD prescribing rate by deprivation quintile"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- Table: years × quintiles -->
-        <div class="table-card" style="margin-bottom:1.25rem">
+        <!-- Line chart only on overview -->
+        <div class="chart-card" style="margin-bottom:1.25rem">
           <div class="chart-card-hd">
-            <div class="chart-title">Rates by Quintile and Year</div>
-            <div class="chart-desc">Average monthly items per 1,000 registered patients</div>
+            <div class="chart-title">Rate by Deprivation Quintile Over Time</div>
+            <div class="chart-desc">Monthly ADHD items per 1,000 patients — 2015–2025</div>
           </div>
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Year</th>
-                  <th class="col-num" style="color:#dc2626">Q1 Most Deprived</th>
-                  <th class="col-num" style="color:#f97316">Q2</th>
-                  <th class="col-num" style="color:#d97706">Q3</th>
-                  <th class="col-num" style="color:#16a34a">Q4</th>
-                  <th class="col-num" style="color:#2563eb">Q5 Least Deprived</th>
-                  <th class="col-num">NI Average</th>
-                </tr>
-              </thead>
-              <tbody id="depr-table-body">
-                <tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:2rem">Loading…</td></tr>
-              </tbody>
-            </table>
+          <div class="chart-wrap depr-chart-wrap">
+            <canvas id="depr-line-chart" aria-label="Line chart of ADHD prescribing rate by deprivation quintile over time"></canvas>
           </div>
         </div>
 
-        <!-- Context and caveat -->
-        <div class="depr-context">
-          <p>Each GP practice is assigned to a deprivation quintile based on the <a href="https://www.nisra.gov.uk/statistics/deprivation/nimdm-2017" target="_blank" rel="noopener">NI Multiple Deprivation Measure 2017</a> (NIMDM). Practices are matched to Super Output Areas via their postcode. Quintile 1 covers the 20% most deprived areas; Quintile 5 covers the 20% least deprived.</p>
-          <p id="depr-practice-counts" class="depr-practice-counts"></p>
-        </div>
-        <p class="depr-caveat">Higher prescribing rates in more deprived areas likely reflect a combination of higher ADHD prevalence, more established shared-care arrangements, and historical referral patterns — not over-prescribing. Conversely, lower rates in less deprived areas may reflect under-diagnosis or greater use of private assessment. These figures should not be used to make judgements about the quality of care provided by any individual practice.</p>
+        <p class="depr-caveat">These figures record prescribing activity, not clinical need or quality of care. <a href="deprivation.html">View the full deprivation analysis →</a></p>
       </div><!-- /deprivation-section -->
 
       <!-- 7. Data source note -->
