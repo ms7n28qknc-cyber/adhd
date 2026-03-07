@@ -130,31 +130,11 @@
         </div>
       </div>
 
-      <!-- 6. Deprivation analysis (summary — full analysis at deprivation.html) -->
-      <div id="deprivation-section" class="depr-loading">
-        <div class="section-hd" style="margin-bottom:1.25rem">
-          <h2 class="section-title">ADHD Prescribing and Deprivation</h2>
-          <p class="section-desc" style="margin-top:0.25rem;font-size:0.875rem;color:var(--text-2)">Prescribing rates by NIMDM 2017 deprivation quintile — Northern Ireland, 2015–2025</p>
-        </div>
-
-        <p class="depr-intro">Each GP practice has been assigned to one of five deprivation quintiles based on the <a href="https://www.nisra.gov.uk/statistics/deprivation/northern-ireland-multiple-deprivation-measure-2017-nimdm2017" target="_blank" rel="noopener">NIMDM 2017</a>. Quintile 1 is the most deprived 20% of areas; Quintile 5 is the least deprived. In 2015 rates were broadly similar across quintiles. Since around 2020–21, rates in less deprived areas have grown significantly faster. Deprivation is measured at the area level and does not necessarily reflect the circumstances of individual patients, who may be registered with a practice outside their immediate residential area.</p>
-
-        <!-- Key finding -->
-        <p class="depr-key-finding" id="depr-key-finding"></p>
-
-        <!-- Line chart only on overview -->
-        <div class="chart-card" style="margin-bottom:1.25rem">
-          <div class="chart-card-hd">
-            <div class="chart-title">Rate by Deprivation Quintile Over Time</div>
-            <div class="chart-desc">Monthly ADHD items per 1,000 patients — 2015–2025</div>
-          </div>
-          <div class="chart-wrap depr-chart-wrap">
-            <canvas id="depr-line-chart" aria-label="Line chart of ADHD prescribing rate by deprivation quintile over time"></canvas>
-          </div>
-        </div>
-
-        <p class="depr-caveat">These figures record prescribing activity, not clinical need or quality of care. <a href="deprivation.html">View the full deprivation analysis →</a></p>
-      </div><!-- /deprivation-section -->
+      <!-- 6. Deprivation link -->
+      <div class="overview-note" style="border-left:3px solid var(--blue);padding-left:1rem">
+        <strong>Prescribing and deprivation:</strong> A separate analysis examines how ADHD prescribing rates vary by area deprivation across Northern Ireland, using NIMDM 2017 quintiles. Since around 2020–21, rates in the least deprived areas have grown significantly faster than in the most deprived.
+        <a href="deprivation.html" style="white-space:nowrap">View the deprivation analysis →</a>
+      </div>
 
       <!-- 7. Data source note -->
       <p class="overview-note">
@@ -212,6 +192,5 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/overview.js"></script>
-  <script src="js/deprivation.js"></script>
 </body>
 </html>

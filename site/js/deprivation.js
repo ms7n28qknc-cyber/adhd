@@ -77,13 +77,12 @@
     // ── Key finding ──────────────────────────────────────────────────────────
     const kfEl = document.getElementById('depr-key-finding');
     if (kfEl && kfYear && kfQ1 != null && kfQ5 != null && kfQ5 > 0) {
-      const ratio  = (kfQ1 / kfQ5).toFixed(1);
-      const higher = kfQ1 >= kfQ5 ? 'higher' : 'lower';
+      const ratio = (kfQ5 / kfQ1).toFixed(1);
       kfEl.innerHTML =
-        `In <strong>${kfYear}</strong>, practices in the most deprived areas (Q1) prescribed ` +
-        `<strong>${fmtRate(kfQ1)}</strong> ADHD items per 1,000 patients per month — ` +
-        `<strong>${ratio}× ${higher}</strong> than the least deprived areas ` +
-        `(Q5: ${fmtRate(kfQ5)}).`;
+        `In <strong>${kfYear}</strong>, practices in the least deprived areas (Q5) prescribed ` +
+        `<strong>${fmtRate(kfQ5)}</strong> ADHD items per 1,000 patients per month — ` +
+        `<strong>${ratio}× more</strong> than practices in the most deprived areas ` +
+        `(Q1: ${fmtRate(kfQ1)}).`;
     }
 
     // ── Line chart (trend per quintile over time) ─────────────────────────────
