@@ -752,6 +752,60 @@ button { font-family: var(--font); }
 }
 
 /* -----------------------------------------------------------------------------
+   The Wider Picture — contextual section on overview page
+   ----------------------------------------------------------------------------- */
+.wider-picture {
+  background: #dce8f5;   /* light blue-grey, distinct from body --bg #f4f6fa */
+  border-top: 1px solid #c4d8ed;
+  border-bottom: 1px solid #c4d8ed;
+  padding: 3rem 0 2.75rem;
+}
+
+.wider-picture-inner {
+  max-width: 740px;   /* narrower than data sections — reading-friendly prose width */
+}
+
+.wider-picture-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 1.25rem;
+  letter-spacing: -0.01em;
+}
+
+.wider-picture-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.wider-picture-body p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--text-2);
+}
+
+.wider-picture-sources {
+  margin: 0;
+  font-size: 0.775rem;
+  line-height: 1.6;
+  color: var(--text-3);
+  padding-top: 1.25rem;
+  border-top: 1px solid #b8cfe6;
+}
+
+@media (max-width: 600px) {
+  .wider-picture {
+    padding: 2.25rem 0 2rem;
+  }
+  .wider-picture-title {
+    font-size: 1.125rem;
+  }
+}
+
+/* -----------------------------------------------------------------------------
    Footer
    ----------------------------------------------------------------------------- */
 .site-footer {
