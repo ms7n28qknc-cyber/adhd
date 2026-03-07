@@ -1699,3 +1699,141 @@ td.rate-below {
 @media (max-width: 600px) {
   .ps-spark-wrap { margin-left: 0; }
 }
+
+/* ============================================================================
+   Deprivation analysis — overview page
+   ============================================================================ */
+
+.depr-loading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Key finding callout */
+.depr-key-finding {
+  background: #fef9c3;
+  border: 1px solid #fde047;
+  border-left: 4px solid #d97706;
+  border-radius: 6px;
+  padding: 0.875rem 1.1rem;
+  font-size: 0.9375rem;
+  color: #713f12;
+  margin-bottom: 1.5rem;
+  line-height: 1.55;
+}
+
+/* Side-by-side charts */
+.depr-charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.depr-chart-wrap {
+  height: 320px;
+  position: relative;
+}
+
+/* Context block */
+.depr-context {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1rem 1.25rem;
+  font-size: 0.875rem;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-top: 1.25rem;
+}
+
+.depr-context p + p { margin-top: 0.5rem; }
+.depr-context a { color: var(--blue); text-decoration: none; }
+.depr-context a:hover { text-decoration: underline; }
+
+.depr-practice-counts {
+  font-size: 0.8125rem;
+  color: var(--text-3);
+  margin-top: 0.35rem;
+}
+
+/* Caveat footnote */
+.depr-caveat {
+  font-size: 0.8125rem;
+  color: var(--text-3);
+  line-height: 1.55;
+  margin-top: 1rem;
+  font-style: italic;
+}
+
+/* NI average column in table */
+.depr-ni-cell { color: var(--text-3); }
+
+@media (max-width: 768px) {
+  .depr-charts-row    { grid-template-columns: 1fr; }
+  .depr-chart-wrap    { height: 280px; }
+}
+
+/* ============================================================================
+   Deprivation badge — practice detail page
+   ============================================================================ */
+
+.practice-depr-badge { margin: 0.35rem 0 0; }
+
+.depr-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.06);
+  color: var(--depr-color, #64748b);
+  border-left: 3px solid var(--depr-color, #64748b);
+}
+
+/* ============================================================================
+   Rankings page — deprivation filter + quintile badges
+   ============================================================================ */
+
+.rankings-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.filter-label {
+  font-size: 0.875rem;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.filter-select {
+  font-size: 0.875rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-0);
+  color: var(--text-1);
+  cursor: pointer;
+}
+
+.rank-q-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  color: #fff;
+  vertical-align: middle;
+  margin-left: 0.4rem;
+  white-space: nowrap;
+}
+
+.rank-q--q1 { background: #dc2626; }
+.rank-q--q2 { background: #f97316; }
+.rank-q--q3 { background: #d97706; }
+.rank-q--q4 { background: #16a34a; }
+.rank-q--q5 { background: #2563eb; }

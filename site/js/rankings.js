@@ -30,8 +30,9 @@ function fmtRate(r) {
 /* ── State ───────────────────────────────────────────────────────────────── */
 let rankings = [];   // raw data from rankings.json
 let niRates  = {};   // averages.json → ni rates
-let activeYear = 'Overall';
-let barChart   = null;
+let activeYear     = 'Overall';
+let activeQuintile = '';   // '' = all, '1'–'5' = filter to that quintile
+let barChart       = null;
 
 /* ── Compute effective rate for a practice in a given year/Overall ────────── */
 function practiceRate(p, year) {
@@ -60,6 +61,7 @@ function buildSorted(year) {
   const rows = [];
   for (const p of rankings) {
     if (p.closed) continue;
+    if (activeQuintile && String(p.deprivationQuintile) !== activeQuintile) continue;
     const rate = practiceRate(p, year);
     if (rate === null) continue;
     rows.push({ ...p, _rate: rate });
@@ -213,10 +215,14 @@ function render(year) {
 }
 
 function tableRow(rank, p, isTop) {
-  const href = `index.html#practice/${p.id}`;
+  const href     = `index.html#practice/${p.id}`;
   const rankSpan = `<span class="rank-num${isTop ? ' rank-num--top' : ''}">${rank}</span>`;
   const lcgSpan  = p.lcg ? `<span class="rank-lcg">${lcgFull(p.lcg)}</span>` : '—';
-  const nameLink = `<a href="${href}" class="rankings-practice-link">${escHtml(p.surgeryName)}</a>
+  const q        = p.deprivationQuintile;
+  const qBadge   = q != null
+    ? `<span class="rank-q-badge rank-q--q${q}" title="Deprivation Q${q} of 5">Q${q}</span>`
+    : '';
+  const nameLink = `<a href="${href}" class="rankings-practice-link">${escHtml(p.surgeryName)}</a>${qBadge}
     ${p.doctorName ? `<br><small style="color:var(--text-3);font-weight:400;font-size:0.75rem">${escHtml(p.doctorName)}</small>` : ''}`;
   return `
     <tr>
@@ -293,6 +299,22 @@ async function main() {
   const years = [...yearSet].sort();
 
   buildYearSelector(years);
+
+  // Quintile filter
+  const qSel = document.getElementById('quintile-select');
+  if (qSel) {
+    // Hide filter if no practice has quintile data yet (assign_deprivation.py not run)
+    const hasQuintileData = rankings.some(p => p.deprivationQuintile != null);
+    if (!hasQuintileData) {
+      const wrap = document.getElementById('quintile-filter-wrap');
+      if (wrap) wrap.style.display = 'none';
+    }
+    qSel.addEventListener('change', () => {
+      activeQuintile = qSel.value;
+      render(activeYear);
+    });
+  }
+
   render(activeYear);
 }
 

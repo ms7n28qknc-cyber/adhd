@@ -347,6 +347,22 @@
     $('practice-postcode').textContent   = data.postcode                       || '';
     $('practice-id').textContent         = data.id;
 
+    // ---- Deprivation quintile badge ----
+    const deprBadgeEl = $('practice-depr-badge');
+    if (deprBadgeEl) {
+      const q = data.deprivationQuintile;
+      if (q != null) {
+        const qLabels = { 1: 'Most Deprived', 2: 'Quintile 2', 3: 'Quintile 3', 4: 'Quintile 4', 5: 'Least Deprived' };
+        const qColors = { 1: '#dc2626', 2: '#f97316', 3: '#d97706', 4: '#16a34a', 5: '#2563eb' };
+        deprBadgeEl.innerHTML =
+          `<span class="depr-badge" style="--depr-color:${qColors[q] || '#64748b'}">` +
+          `Deprivation: Q${q} of 5 \u2014 ${qLabels[q] || ''}</span>`;
+        deprBadgeEl.classList.remove('hidden');
+      } else {
+        deprBadgeEl.classList.add('hidden');
+      }
+    }
+
     // ---- Practice size (patient count + sparkline) ----
     renderPracticeSize(data);
 

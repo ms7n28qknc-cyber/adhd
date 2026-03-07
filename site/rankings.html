@@ -79,6 +79,19 @@
       <!-- Year selector -->
       <div class="year-selector" id="year-selector" role="group" aria-label="Select year"></div>
 
+      <!-- Deprivation quintile filter -->
+      <div class="rankings-filters" id="quintile-filter-wrap">
+        <label class="filter-label" for="quintile-select">Filter by deprivation quintile:</label>
+        <select class="filter-select" id="quintile-select" aria-label="Filter rankings by deprivation quintile">
+          <option value="">All quintiles</option>
+          <option value="1">Q1 — Most Deprived</option>
+          <option value="2">Q2</option>
+          <option value="3">Q3</option>
+          <option value="4">Q4</option>
+          <option value="5">Q5 — Least Deprived</option>
+        </select>
+      </div>
+
       <!-- Bar chart -->
       <div class="chart-card overview-chart-card" id="bar-chart-card">
         <div class="chart-card-hd">
