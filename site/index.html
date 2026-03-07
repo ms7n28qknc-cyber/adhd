@@ -293,6 +293,31 @@
           <p class="context-caveat">Differences in prescribing rates reflect many factors including patient demographics, local referral pathways, and shared care arrangements. Higher or lower rates do not indicate better or worse care.</p>
         </div>
 
+        <!-- Deprivation context -->
+        <div class="table-card hidden" id="depr-context-card">
+          <div class="table-card-hd">
+            <h2 class="section-title">Prescribing and Area Deprivation</h2>
+            <p class="table-desc" id="depr-context-desc"></p>
+          </div>
+          <div class="chart-wrap context-chart-wrap">
+            <canvas id="chart-depr-context" aria-label="Deprivation quintile comparison chart" role="img"></canvas>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table" id="depr-context-table">
+              <thead>
+                <tr>
+                  <th scope="col">Year</th>
+                  <th scope="col">This practice</th>
+                  <th scope="col" id="depr-context-quintile-header">Quintile average</th>
+                  <th scope="col">NI average</th>
+                </tr>
+              </thead>
+              <tbody id="depr-context-table-body"></tbody>
+            </table>
+          </div>
+          <p class="context-caveat">Area deprivation is based on NIMDM 2017 Super Output Areas. Practices in more or less deprived areas serve different patient populations; prescribing rates are not a direct measure of need or quality of care.</p>
+        </div>
+
         </div><!-- /practice-content -->
 
       </div>

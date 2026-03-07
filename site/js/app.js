@@ -44,13 +44,15 @@
      ========================================================================= */
 
   const state = {
-    index:    null,   // practices-index.json array
-    practice: null,   // current loaded practice JSON
-    averages: null,   // averages.json (NI + LCG per-capita rates)
+    index:       null,   // practices-index.json array
+    practice:    null,   // current loaded practice JSON
+    averages:    null,   // averages.json (NI + LCG per-capita rates)
+    deprivation: null,   // deprivation-analysis.json
     charts: {
-      total:   null,
-      drugs:   null,
-      context: null,
+      total:       null,
+      drugs:       null,
+      context:     null,
+      deprContext: null,
     },
   };
 
@@ -235,9 +237,12 @@
       hide($('practice-skeleton'));
       reveal($('practice-content'), 'is-revealing');
 
-      // Render the context comparison chart AFTER practice-content is visible
+      // Render context charts AFTER practice-content is visible
       // so that Chart.js measures real canvas dimensions, not zero.
-      requestAnimationFrame(() => renderContext(data));
+      requestAnimationFrame(() => {
+        renderContext(data);
+        renderDeprivationContext(data);
+      });
 
       document.title = `${titleCase(data.surgeryName || data.doctorName || '')} — ADHD Prescribing NI`;
     } catch (err) {
@@ -851,6 +856,176 @@
     show(card);
   }
 
+  function renderDeprivationContext(data) {
+    const card = $('depr-context-card');
+    if (!card) return;
+
+    const q = data.deprivationQuintile;
+    if (!state.deprivation || q == null) { hide(card); return; }
+
+    const qLabels = { 1: 'Most Deprived (Q1)', 2: 'Quintile 2', 3: 'Quintile 3', 4: 'Quintile 4', 5: 'Least Deprived (Q5)' };
+    const qDesc   = { 1: 'most deprived', 2: 'second most deprived', 3: 'middle', 4: 'second least deprived', 5: 'least deprived' };
+    const qColors = { 1: '#dc2626', 2: '#f97316', 3: '#d97706', 4: '#16a34a', 5: '#2563eb' };
+    const color   = qColors[q] || '#64748b';
+
+    const quintileRates  = state.deprivation.byQuintile[String(q)] || {};
+    const niRates        = state.deprivation.niAverage              || {};
+    const practiceRates  = data.yearlyRatePerCapita                 || {};
+
+    // Update header text
+    const descEl = $('depr-context-desc');
+    if (descEl) {
+      descEl.textContent =
+        `This practice is located in a ${qDesc[q]} area (NIMDM 2017, Quintile ${q} of 5). ` +
+        `The chart compares its prescribing rate against the average for all practices in the same quintile and the NI average.`;
+    }
+
+    // Update quintile column header
+    const qHeader = $('depr-context-quintile-header');
+    if (qHeader) qHeader.textContent = `${qLabels[q]} average`;
+
+    // Destroy previous chart if present
+    if (state.charts.deprContext) {
+      state.charts.deprContext.destroy();
+      state.charts.deprContext = null;
+    }
+
+    const ctx = $('chart-depr-context');
+    if (!ctx) { hide(card); return; }
+
+    state.charts.deprContext = new Chart(ctx.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: YEARS,
+        datasets: [
+          {
+            label:                'This practice',
+            data:                 YEARS.map(y => practiceRates[y] ?? null),
+            borderColor:          '#2563eb',
+            backgroundColor:      'transparent',
+            borderWidth:          2.5,
+            pointRadius:          4,
+            pointHoverRadius:     6,
+            pointBackgroundColor: '#2563eb',
+            pointBorderColor:     '#fff',
+            pointBorderWidth:     1.5,
+            tension:              0.3,
+            spanGaps:             false,
+          },
+          {
+            label:                qLabels[q] + ' average',
+            data:                 YEARS.map(y => quintileRates[y] ?? null),
+            borderColor:          color,
+            backgroundColor:      'transparent',
+            borderWidth:          1.5,
+            borderDash:           [4, 3],
+            pointRadius:          2,
+            pointHoverRadius:     4,
+            pointBackgroundColor: color,
+            tension:              0.3,
+            spanGaps:             false,
+          },
+          {
+            label:                'NI average',
+            data:                 YEARS.map(y => niRates[y] ?? null),
+            borderColor:          '#cbd5e1',
+            backgroundColor:      'transparent',
+            borderWidth:          1.5,
+            borderDash:           [2, 3],
+            pointRadius:          2,
+            pointHoverRadius:     4,
+            pointBackgroundColor: '#cbd5e1',
+            tension:              0.3,
+            spanGaps:             false,
+          },
+        ],
+      },
+      options: {
+        responsive:          true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              font:          { size: 11 },
+              color:         '#3d4f68',
+              boxWidth:      10,
+              boxHeight:     2,
+              padding:       14,
+              usePointStyle: true,
+              pointStyle:    'line',
+            },
+          },
+          tooltip: {
+            ...TOOLTIP_BASE,
+            displayColors: true,
+            boxWidth:  24,
+            boxHeight: 2,
+            callbacks: {
+              title: items => `${items[0].label}`,
+              label: ctx  => {
+                const v = ctx.parsed.y;
+                return v == null ? null : ` ${ctx.dataset.label}: ${v.toFixed(1)}`;
+              },
+            },
+            filter: item => item.parsed.y != null,
+          },
+        },
+        scales: {
+          x: {
+            grid:   AXIS_GRID,
+            ticks:  { ...AXIS_TICKS, maxTicksLimit: 11 },
+            border: { color: 'transparent' },
+          },
+          y: {
+            beginAtZero: true,
+            grid:   AXIS_GRID,
+            ticks:  { ...AXIS_TICKS, callback: v => v.toFixed(1) },
+            border: { color: 'transparent' },
+            title: {
+              display: true,
+              text:    'Monthly items per 1,000 patients',
+              color:   '#7b8fa8',
+              font:    { size: 11 },
+            },
+          },
+        },
+      },
+    });
+
+    // ---- Table ----
+    const tbody = $('depr-context-table-body');
+    tbody.innerHTML = '';
+
+    YEARS.forEach(year => {
+      const pRate = practiceRates[year];
+      const qRate = quintileRates[year];
+      const niR   = niRates[year];
+
+      const pCell  = pRate != null ? pRate.toFixed(1) : '—';
+      const qCell  = qRate != null ? qRate.toFixed(1) : '—';
+      const niCell = niR   != null ? niR.toFixed(1)   : '—';
+
+      let pClass = '';
+      if (pRate != null && qRate != null) {
+        if (pRate > qRate) pClass = 'rate-above';
+        else if (pRate < qRate) pClass = 'rate-below';
+      }
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${year}</td>
+        <td${pClass ? ` class="${pClass}"` : ''}>${pCell}</td>
+        <td>${qCell}</td>
+        <td>${niCell}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    show(card);
+  }
+
   /* =========================================================================
      Search / Autocomplete
      ========================================================================= */
@@ -1059,10 +1234,11 @@
      ========================================================================= */
 
   async function init() {
-    // Load practices index and averages in parallel
-    const [indexRes, avgRes] = await Promise.allSettled([
+    // Load practices index, averages, and deprivation data in parallel
+    const [indexRes, avgRes, deprRes] = await Promise.allSettled([
       fetch('data/practices-index.json'),
       fetch('data/averages.json'),
+      fetch('data/deprivation-analysis.json'),
     ]);
 
     try {
@@ -1085,6 +1261,15 @@
     } catch (err) {
       // Non-fatal: context section will just be hidden
       console.warn('Could not load averages.json:', err);
+    }
+
+    try {
+      if (deprRes.status === 'rejected' || !deprRes.value.ok)
+        throw new Error(`HTTP ${deprRes.value?.status ?? 'network error'}`);
+      state.deprivation = await deprRes.value.json();
+    } catch (err) {
+      // Non-fatal: deprivation context section will just be hidden
+      console.warn('Could not load deprivation-analysis.json:', err);
     }
 
     search.init();

@@ -689,7 +689,7 @@ button { font-family: var(--font); }
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tbody tr:hover { background: var(--surface-alt); }
 
-.col-num { text-align: right; }
+.col-num { text-align: left; }
 .data-table td.col-num { color: var(--text-2); }
 
 .drug-swatch {
@@ -1593,7 +1593,7 @@ td.rate-below {
 /* Rate column */
 .col-rate {
   font-variant-numeric: tabular-nums;
-  text-align: right;
+  text-align: left;
 }
 
 /* Practice name links inside table */
@@ -1708,6 +1708,18 @@ td.rate-below {
   opacity: 0.5;
   pointer-events: none;
 }
+
+/* Introductory explanation paragraph */
+.depr-intro {
+  font-size: 0.9125rem;
+  color: var(--text-2);
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+  max-width: 74ch;
+}
+
+.depr-intro a { color: var(--blue); text-decoration: none; }
+.depr-intro a:hover { text-decoration: underline; }
 
 /* Key finding callout */
 .depr-key-finding {
