@@ -1,3 +1,20 @@
 __pycache__/
 *.py[cod]
 data/
+
+# Environment / secrets — never commit these
+.env
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node (if ever added)
+node_modules/

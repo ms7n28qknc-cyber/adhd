@@ -959,6 +959,97 @@ button { font-family: var(--font); }
   color: rgba(255,255,255,0.9) !important;
 }
 
+/* -----------------------------------------------------------------------------
+   Hamburger / mobile nav
+   ----------------------------------------------------------------------------- */
+
+/* Button — hidden on desktop */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin-right: -6px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.hamburger-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 2px;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+/* Animate to × when open */
+.nav-toggle[aria-expanded="true"] .hamburger-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav-toggle[aria-expanded="true"] .hamburger-bar:nth-child(2) {
+  opacity: 0;
+}
+.nav-toggle[aria-expanded="true"] .hamburger-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 768px) {
+  /* Show hamburger, hide nothing on desktop */
+  .nav-toggle {
+    display: flex;
+  }
+
+  /* Drop the nav below the header as an overlay */
+  .site-nav {
+    position: absolute;
+    top: 100%;        /* flush with bottom of .site-header */
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: var(--navy-mid);
+    border-bottom: 1px solid var(--navy-rule);
+    /* Slide-down animation via max-height */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.28s ease;
+    z-index: 199;     /* just inside the header's stacking context */
+  }
+
+  .site-nav.is-open {
+    max-height: 360px;
+  }
+
+  /* Individual links — comfortable tap targets */
+  .site-nav .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0 1.25rem;
+    min-height: 44px;
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.65);
+    border-bottom: 1px solid var(--navy-rule);
+  }
+  .site-nav .nav-link:last-child {
+    border-bottom: none;
+  }
+  .site-nav .nav-link:hover,
+  .site-nav .nav-link:focus {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .site-nav .nav-link--active {
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.07);
+  }
+}
+
 /* ── Banner ─────────────────────────────────────────────────────────────── */
 .browse-banner {
   background: var(--navy);
