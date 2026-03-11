@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rankings of GP practices in England by ADHD prescribing rate per 1,000 registered patients.">
+  <title>Practice Rankings — England ADHD Prescribing</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LJ0CR89X2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-5LJ0CR89X2');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/nav-ext.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="../index.html" class="site-brand">
+        <span class="brand-pill">NI</span>
+        ADHD Prescribing
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Site navigation">
+
+        <a href="../index.html" class="nav-link">Home</a>
+
+        <div class="nav-dropdown" data-dropdown>
+          <button class="nav-link nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+            Northern Ireland
+            <svg class="dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu" role="menu">
+            <a href="../overview.html"    class="nav-dropdown-item" role="menuitem">Overview</a>
+            <a href="../deprivation.html" class="nav-dropdown-item" role="menuitem">Deprivation</a>
+            <a href="../practices.html"   class="nav-dropdown-item" role="menuitem">All Practices</a>
+            <a href="../rankings.html"    class="nav-dropdown-item" role="menuitem">Rankings</a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown" data-dropdown>
+          <button class="nav-link nav-dropdown-btn nav-link--active" aria-expanded="false" aria-haspopup="true" aria-current="true">
+            England
+            <svg class="dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu" role="menu">
+            <a href="index.html"       class="nav-dropdown-item" role="menuitem">Overview</a>
+            <a href="deprivation.html" class="nav-dropdown-item" role="menuitem">Deprivation</a>
+            <a href="practices.html"   class="nav-dropdown-item" role="menuitem">All Practices</a>
+            <a href="rankings.html"    class="nav-dropdown-item" role="menuitem" aria-current="page">Rankings</a>
+          </div>
+        </div>
+
+        <a href="../comparison.html" class="nav-link">Compare</a>
+        <a href="https://themoment.blog" target="_blank" rel="noopener" class="nav-link">themoment.blog</a>
+
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="site-nav">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page banner -->
+  <div class="browse-banner">
+    <div class="container">
+      <div class="browse-banner-inner">
+        <div>
+          <h1 class="browse-title">England — Practice Rankings</h1>
+          <p class="browse-subtitle">Average monthly ADHD items per 1,000 registered patients — England, 2015–2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="container overview-page" id="rankings-page">
+
+      <!-- Context notice -->
+      <div class="rankings-context-notice" role="note" aria-label="Data context notice">
+        <svg class="rankings-context-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+          <path d="M12 9v4"/><path d="M12 17h.01"/>
+        </svg>
+        <div>
+          <p><strong>Important context — please read before interpreting these rankings.</strong></p>
+          <p>
+            This ranking shows the average monthly number of ADHD prescriptions issued per 1,000
+            registered patients at each GP practice over the 12 months to June 2025. A higher rate
+            does not mean a practice is over-prescribing, and a lower rate does not mean patients
+            are being under-served.
+          </p>
+          <p>
+            Prescribing rates are shaped by many factors outside a practice's direct control:
+            local demographics, age profile of registered patients, proximity to specialist ADHD
+            services, shared-care arrangements with secondary care, and historical referral pathways.
+            Dedicated ADHD clinics and specialist providers will appear at the very top of these rankings —
+            that is expected and appropriate.
+          </p>
+          <p>
+            <strong>These figures should not be used to make judgements about the quality
+            of care provided by any practice.</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- Period note + region filter -->
+      <div class="rankings-filters" id="region-filter-wrap">
+        <span class="filter-label" id="rankings-period-note" style="margin-right:auto"></span>
+        <label class="filter-label" for="region-select">Filter by NHS region:</label>
+        <select class="filter-select" id="region-select" aria-label="Filter rankings by NHS region">
+          <option value="">All regions</option>
+        </select>
+      </div>
+
+      <!-- Bar chart — top 10 -->
+      <div class="chart-card overview-chart-card" id="bar-chart-card">
+        <div class="chart-card-hd">
+          <div class="chart-title">Top 10 practices by prescribing rate</div>
+          <div class="chart-desc" id="bar-chart-desc">Average monthly ADHD items per 1,000 registered patients</div>
+        </div>
+        <div class="rankings-bar-wrap">
+          <canvas id="rankings-bar-chart" aria-label="Top 10 practices bar chart" role="img"></canvas>
+        </div>
+      </div>
+
+      <!-- Rankings table -->
+      <div class="table-card" id="rankings-table-card">
+        <div class="table-card-hd">
+          <h2 class="section-title">Full rankings</h2>
+          <p class="table-desc" id="rankings-table-desc">Showing top 25 and bottom 25 practices by prescribing rate</p>
+        </div>
+        <div id="rankings-no-data" class="rankings-no-data hidden">
+          No data available for this selection.
+        </div>
+        <div class="table-scroll" id="rankings-table-wrap">
+          <table class="data-table" id="rankings-table">
+            <thead>
+              <tr>
+                <th scope="col">Rank</th>
+                <th scope="col">Practice</th>
+                <th scope="col">ICB</th>
+                <th scope="col">Region</th>
+                <th scope="col" class="col-rate">Rate<br><small style="font-weight:400;font-size:0.7rem">(items / 1k patients / month)</small></th>
+                <th scope="col" class="col-num">Items (12m)</th>
+              </tr>
+            </thead>
+            <tbody id="rankings-tbody">
+              <tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:2rem">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="rankings-caveat">
+          Rate = average monthly ADHD items per 1,000 registered patients for the 12 months to June 2025.
+          Practices with no registered patient data are excluded.
+          Differences in rates reflect local demographics, referral patterns, and shared-care arrangements —
+          not the quality of care provided.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-primary">
+        <p class="footer-source">
+          Data: <strong>English Prescribing Dataset</strong> from
+          <a href="https://www.nhsbsa.nhs.uk/prescription-data/prescribing-data/english-prescribing-data-epd" target="_blank" rel="noopener">NHSBSA</a>.
+          List sizes: <a href="https://openprescribing.net" target="_blank" rel="noopener">OpenPrescribing.net</a>.
+        </p>
+        <p class="footer-licence">
+          Licensed under the
+          <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">UK Open Government Licence (OGL) v3.0</a>
+        </p>
+      </div>
+      <div class="footer-secondary">
+        <p>Analysis by <a href="https://themoment.blog" target="_blank" rel="noopener">themoment.blog</a></p>
+      </div>
+      <p class="footer-ai">
+        Built with AI assistance. Data from <a href="https://www.nhsbsa.nhs.uk" target="_blank" rel="noopener">NHSBSA</a> (OGL).
+        Report issues: <a href="mailto:john@themoment.blog">john@themoment.blog</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/dropdown-nav.js"></script>
+  <script src="../js/england-rankings.js"></script>
+
+</body>
+</html>

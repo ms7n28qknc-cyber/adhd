@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ADHD prescribing rates by area deprivation in England, 2015–2025. Analysis by Index of Multiple Deprivation 2019 quintile.">
+  <title>Deprivation Analysis — England ADHD Prescribing</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LJ0CR89X2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-5LJ0CR89X2');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/nav-ext.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="../index.html" class="site-brand">
+        <span class="brand-pill">NI</span>
+        ADHD Prescribing
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Site navigation">
+
+        <a href="../index.html" class="nav-link">Home</a>
+
+        <div class="nav-dropdown" data-dropdown>
+          <button class="nav-link nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+            Northern Ireland
+            <svg class="dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu" role="menu">
+            <a href="../overview.html"    class="nav-dropdown-item" role="menuitem">Overview</a>
+            <a href="../deprivation.html" class="nav-dropdown-item" role="menuitem">Deprivation</a>
+            <a href="../practices.html"   class="nav-dropdown-item" role="menuitem">All Practices</a>
+            <a href="../rankings.html"    class="nav-dropdown-item" role="menuitem">Rankings</a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown" data-dropdown>
+          <button class="nav-link nav-dropdown-btn nav-link--active" aria-expanded="false" aria-haspopup="true" aria-current="true">
+            England
+            <svg class="dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu" role="menu">
+            <a href="index.html"       class="nav-dropdown-item" role="menuitem">Overview</a>
+            <a href="deprivation.html" class="nav-dropdown-item" role="menuitem" aria-current="page">Deprivation</a>
+            <a href="practices.html"   class="nav-dropdown-item" role="menuitem">All Practices</a>
+            <a href="rankings.html"    class="nav-dropdown-item" role="menuitem">Rankings</a>
+          </div>
+        </div>
+
+        <a href="../comparison.html" class="nav-link">Compare</a>
+        <a href="https://themoment.blog" target="_blank" rel="noopener" class="nav-link">themoment.blog</a>
+
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="site-nav">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page banner -->
+  <div class="browse-banner">
+    <div class="container">
+      <div class="browse-banner-inner">
+        <div>
+          <h1 class="browse-title">England — Deprivation Analysis</h1>
+          <p class="browse-subtitle">Prescribing rates by IMD 2019 deprivation quintile — England, 2015–2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="container overview-page">
+      <div class="coming-soon-wrap">
+        <div class="coming-soon-icon">📊</div>
+        <h2 class="coming-soon-title">Deprivation analysis coming soon</h2>
+        <p class="coming-soon-desc">
+          This page will show ADHD prescribing rates broken down by Index of Multiple
+          Deprivation 2019 quintile across England. GP postcodes will be mapped to LSOA
+          and deprivation quintile via the postcodes.io API.
+          Data processing is in progress.
+        </p>
+        <a href="../deprivation.html" class="coming-soon-link coming-soon-link--ni">
+          View NI deprivation analysis instead →
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-text">
+        Deprivation data: <a href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019" target="_blank" rel="noopener">IMD 2019</a> via
+        <a href="https://postcodes.io" target="_blank" rel="noopener">postcodes.io</a>.
+        Independent project — not affiliated with the NHS.
+      </p>
+    </div>
+  </footer>
+
+  <script src="../js/nav.js"></script>
+  <script src="../js/dropdown-nav.js"></script>
+
+</body>
+</html>

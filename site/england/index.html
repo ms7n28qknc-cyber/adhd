@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Overview of ADHD prescribing trends across GP practices in England, 2015–2025. Explore by drug, Integrated Care Board, and practice.">
+  <title>England Overview — ADHD Prescribing</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LJ0CR89X2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-5LJ0CR89X2');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/nav-ext.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="../index.html" class="site-brand">
+        <span class="brand-pill">NI</span>
+        ADHD Prescribing
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Site navigation">
+
+        <a href="../index.html" class="nav-link">Home</a>
+
+        <div class="nav-dropdown" data-dropdown>
+          <button class="nav-link nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+            Northern Ireland
+            <svg class="dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu" role="menu">
+            <a href="../overview.html"    class="nav-dropdown-item" role="menuitem">Overview</a>
+            <a href="../deprivation.html" class="nav-dropdown-item" role="menuitem">Deprivation</a>
+            <a href="../practices.html"   class="nav-dropdown-item" role="menuitem">All Practices</a>
+            <a href="../rankings.html"    class="nav-dropdown-item" role="menuitem">Rankings</a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown" data-dropdown>
+          <button class="nav-link nav-dropdown-btn nav-link--active" aria-expanded="false" aria-haspopup="true" aria-current="true">
+            England
+            <svg class="dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu" role="menu">
+            <a href="index.html"       class="nav-dropdown-item" role="menuitem" aria-current="page">Overview</a>
+            <a href="deprivation.html" class="nav-dropdown-item" role="menuitem">Deprivation</a>
+            <a href="practices.html"   class="nav-dropdown-item" role="menuitem">All Practices</a>
+            <a href="rankings.html"    class="nav-dropdown-item" role="menuitem">Rankings</a>
+          </div>
+        </div>
+
+        <a href="../comparison.html" class="nav-link">Compare</a>
+        <a href="https://themoment.blog" target="_blank" rel="noopener" class="nav-link">themoment.blog</a>
+
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="site-nav">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page banner -->
+  <div class="browse-banner">
+    <div class="container">
+      <div class="browse-banner-inner">
+        <div>
+          <h1 class="browse-title">England — ADHD Prescribing Overview</h1>
+          <p class="browse-subtitle">GP practice prescribing data from the NHSBSA English Prescribing Dataset, 2015–2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="container overview-page">
+
+      <!-- 1. Headline stats -->
+      <div class="stats-grid" id="headline-stats">
+        <div class="stat-card"><div class="stat-label">Loading…</div><div class="stat-value">—</div></div>
+        <div class="stat-card"><div class="stat-label">Loading…</div><div class="stat-value">—</div></div>
+        <div class="stat-card"><div class="stat-label">Loading…</div><div class="stat-value">—</div></div>
+        <div class="stat-card"><div class="stat-label">Loading…</div><div class="stat-value">—</div></div>
+      </div>
+
+      <!-- 2. Monthly prescribing chart -->
+      <div class="chart-card overview-chart-card">
+        <div class="chart-card-hd">
+          <div class="chart-title">Monthly Prescribing Trends</div>
+          <div class="chart-desc">Total items (left axis) and gross cost £ (right axis) per month across the full period</div>
+        </div>
+        <div class="chart-wrap overview-chart-wrap">
+          <canvas id="monthly-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- 3. Yearly summary table -->
+      <div class="table-card">
+        <div class="table-card-hd">
+          <div class="section-title">Yearly Summary</div>
+          <div class="table-desc">Annual totals with year-on-year percentage changes. Red = increase, green = decrease.</div>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th class="col-num">Total Items</th>
+                <th class="col-num">Total Gross Cost</th>
+                <th class="col-num">Avg Monthly Items</th>
+                <th class="col-num">Avg Monthly Cost</th>
+                <th class="col-num">YoY Items</th>
+                <th class="col-num">YoY Cost</th>
+              </tr>
+            </thead>
+            <tbody id="yearly-tbody">
+              <tr><td colspan="7" style="text-align:center;color:var(--text-3);padding:2rem">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. Drug stacked area chart -->
+      <div class="chart-card overview-chart-card">
+        <div class="chart-card-hd">
+          <div class="chart-title">Drug Mix Over Time</div>
+          <div class="chart-desc">Monthly items prescribed by drug — stacked to show how the mix has shifted since 2015</div>
+        </div>
+        <div class="chart-wrap overview-chart-wrap">
+          <canvas id="drug-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- 5. Drug breakdown table -->
+      <div class="table-card">
+        <div class="table-card-hd">
+          <div class="section-title">Drug Breakdown</div>
+          <div class="table-desc">Totals across the full 2015–2025 period for the main ADHD drugs</div>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Drug</th>
+                <th class="col-num">Total Items</th>
+                <th class="col-num">Share of Items</th>
+                <th class="col-num">Total Gross Cost</th>
+                <th class="col-num">Share of Cost</th>
+                <th>Trend</th>
+              </tr>
+            </thead>
+            <tbody id="drug-tbody">
+              <tr><td colspan="6" style="text-align:center;color:var(--text-3);padding:2rem">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 6. Data source note -->
+      <p class="overview-note">
+        <strong>Data source:</strong> GP Prescribing Data published by the NHS Business Services Authority (NHSBSA) as the
+        <a href="https://www.nhsbsa.nhs.uk/prescription-data/prescribing-data/english-prescribing-data-epd" target="_blank" rel="noopener">English Prescribing Dataset (EPD)</a>,
+        licensed under the
+        <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">UK Open Government Licence (OGL) v3.0</a>.
+        Costs shown are <em>gross cost</em> as listed in the Drug Tariff and do not reflect the net cost to the NHS.
+        Item counts represent the number of prescription items dispensed and do not directly
+        correspond to individual patients or unique dosage units.
+        Data covers January 2015 to June 2025.
+      </p>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-primary">
+        <p class="footer-source">
+          Data: <strong>English Prescribing Dataset</strong> from
+          <a href="https://www.nhsbsa.nhs.uk/prescription-data/prescribing-data/english-prescribing-data-epd" target="_blank" rel="noopener">NHSBSA</a>
+        </p>
+        <p class="footer-licence">
+          Licensed under the
+          <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">UK Open Government Licence (OGL) v3.0</a>
+        </p>
+      </div>
+      <div class="footer-secondary">
+        <p>Analysis by <a href="https://themoment.blog" target="_blank" rel="noopener">themoment.blog</a></p>
+      </div>
+      <p class="footer-ai">
+        Built with AI assistance. Data from <a href="https://www.nhsbsa.nhs.uk" target="_blank" rel="noopener">NHSBSA</a> (OGL).
+        Report issues: <a href="mailto:john@themoment.blog">john@themoment.blog</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/dropdown-nav.js"></script>
+  <script src="../js/england-overview.js"></script>
+
+</body>
+</html>

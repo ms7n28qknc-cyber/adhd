@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Search and explore all GP practices in England prescribing ADHD medication, 2015–2025.">
+  <title>All Practices — England ADHD Prescribing</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5LJ0CR89X2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-5LJ0CR89X2');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/nav-ext.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="../index.html" class="site-brand">
+        <span class="brand-pill">NI</span>
+        ADHD Prescribing
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="Site navigation">
+
+        <a href="../index.html" class="nav-link">Home</a>
+
+        <div class="nav-dropdown" data-dropdown>
+          <button class="nav-link nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+            Northern Ireland
+            <svg class="dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu" role="menu">
+            <a href="../overview.html"    class="nav-dropdown-item" role="menuitem">Overview</a>
+            <a href="../deprivation.html" class="nav-dropdown-item" role="menuitem">Deprivation</a>
+            <a href="../practices.html"   class="nav-dropdown-item" role="menuitem">All Practices</a>
+            <a href="../rankings.html"    class="nav-dropdown-item" role="menuitem">Rankings</a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown" data-dropdown>
+          <button class="nav-link nav-dropdown-btn nav-link--active" aria-expanded="false" aria-haspopup="true" aria-current="true">
+            England
+            <svg class="dropdown-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+              <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-dropdown-menu" role="menu">
+            <a href="index.html"       class="nav-dropdown-item" role="menuitem">Overview</a>
+            <a href="deprivation.html" class="nav-dropdown-item" role="menuitem">Deprivation</a>
+            <a href="practices.html"   class="nav-dropdown-item" role="menuitem" aria-current="page">All Practices</a>
+            <a href="rankings.html"    class="nav-dropdown-item" role="menuitem">Rankings</a>
+          </div>
+        </div>
+
+        <a href="../comparison.html" class="nav-link">Compare</a>
+        <a href="https://themoment.blog" target="_blank" rel="noopener" class="nav-link">themoment.blog</a>
+
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="site-nav">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page banner -->
+  <div class="browse-banner">
+    <div class="container">
+      <div class="browse-banner-inner">
+        <div>
+          <h1 class="browse-title">England — All Practices</h1>
+          <p class="browse-subtitle">Search ~6,400 GP practices by name, postcode, or Integrated Care Board</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="container browse-container">
+      <div id="browse-list" aria-live="polite" aria-label="Practice directory"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-primary">
+        <p class="footer-source">
+          Data: <strong>English Prescribing Dataset</strong> from
+          <a href="https://www.nhsbsa.nhs.uk/prescription-data/prescribing-data/english-prescribing-data-epd" target="_blank" rel="noopener">NHSBSA</a>
+        </p>
+        <p class="footer-licence">
+          Licensed under the
+          <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" target="_blank" rel="noopener">UK Open Government Licence (OGL) v3.0</a>
+        </p>
+      </div>
+      <div class="footer-secondary">
+        <p>Analysis by <a href="https://themoment.blog" target="_blank" rel="noopener">themoment.blog</a></p>
+      </div>
+      <p class="footer-ai">
+        Built with AI assistance. Data from <a href="https://www.nhsbsa.nhs.uk" target="_blank" rel="noopener">NHSBSA</a> (OGL).
+        Report issues: <a href="mailto:john@themoment.blog">john@themoment.blog</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/dropdown-nav.js"></script>
+  <script src="../js/england-practices.js"></script>
+
+</body>
+</html>
